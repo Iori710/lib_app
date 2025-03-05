@@ -8,25 +8,24 @@ class User(models.Model):
     HN = models.CharField(max_length=50)
     PW = models.CharField(max_length=50)
 
+class Library(models.Model):
+    ISBN = models.BigIntegerField(default=3784000000000,primary_key=True)
+    stock = models.IntegerField(default=1)
     
 class Book(models.Model):
     book_id = models.IntegerField(primary_key=True)
-    ISBN = models.BigIntegerField(default=3784000000000)
+    ISBN = models.ForeignKey(Library,on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     writer = models.CharField(max_length=50)
     publisher = models.CharField(max_length=50)
     shelf = models.CharField(max_length=50)
-    c_code = models.BigIntegerField(default=1920000000000)
-    
-class Library(models.Model):
-    ISBN = models.ForeignKey(Book,on_delete=models.CASCADE,primary_key=True)
-    stock = models.IntegerField(default=1)
+    c_code = models.BigIntegerField(default=1920000000000) 
     
 class Review(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     ISBN = models.ForeignKey(Library, on_delete=models.CASCADE)
     stars = models.IntegerField(default=0)
-    review = models.TextField(blank=True)
+    review = models.TextField(null=True)
     
 class Reserve(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, primary_key=True)

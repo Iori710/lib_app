@@ -24,5 +24,18 @@ class Library(models.Model):
     
 class Review(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    ISBN = models.ForeignKey(Library, on_delete=models.CASCADE)
+    stars = models.IntegerField
+    review = models.TextField(blank=True)
+    
+class Reserve(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, primary_key=True)
+    book_id = models.ForeignKey(Book, on_delete=models.CASCADE)
+    lending_start = models.DateField
+    lending_end = models.DateField
+    
+class Lending(Reserve):
+    returned = models.BooleanField(default=False)
+    
     
     

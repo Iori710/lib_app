@@ -19,7 +19,7 @@ class Book(models.Model):
     c_code = models.BigIntegerField
     
 class Library(models.Model):
-    ISBN = models.ForeignKey(Book.ISBN,primary_key=True)
+    ISBN = models.ForeignKey(Book,on_delete=models.CASCADE,primary_key=True)
     stock = models.IntegerField
     
 class Review(models.Model):

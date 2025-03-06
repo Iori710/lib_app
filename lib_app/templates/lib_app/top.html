@@ -5,14 +5,26 @@
     <title>LogoutViewテスト</title>
 </head>
 <body>
-    <h2>ユーザー一覧</h2>
-    {% for user in users %}
-    <li>{{ user.username }}</li>
-    {% endfor %}
-    {% if user.is_authenticated %}
-    <a href="{% url 'logout' %}">ログアウト</a>
-    {% else %}
-    <a href="{% url 'login' %}">ログイン</a>
-    {% endif %}
+    <form method="get">
+        <input type="search" value="{{ request.GET.query }}" 
+               name="query" type="text" 
+               placeholder="タイトルを入力 ">
+    </form>
+    <form method="get">
+        <input type="search" value="{{ request.GET.query }}" 
+               name="query" type="text" 
+               placeholder="著者を入力 ">
+    </form>
+    <form method="get">
+        <input type="search" value="{{ request.GET.query }}" 
+               name="query" type="text" 
+               placeholder="出版社を入力 ">
+    </form>
+    <form method="get">
+        <input type="search" value="{{ request.GET.query }}" 
+               name="query" type="text" 
+               placeholder="ISBNを入力 ">
+    </form>
+    <button>検索</button>
 </body>
 </html>

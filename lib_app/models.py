@@ -4,7 +4,6 @@ from datetime import date, timedelta
 
 # Create your models here.
 
-
 class Library(models.Model):
     ISBN = models.BigIntegerField(default=3784000000000,primary_key=True)
     stock = models.IntegerField(default=1)

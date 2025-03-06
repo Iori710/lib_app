@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>LogoutViewテスト</title>
+</head>
+<body>
+    <h2>ユーザー一覧</h2>
+    {% for user in users %}
+    <li>{{ user.username }}</li>
+    {% endfor %}
+    {% if user.is_authenticated %}
+    <a href="{% url 'logout' %}">ログアウト</a>
+    {% else %}
+    <a href="{% url 'login' %}">ログイン</a>
+    {% endif %}
+</body>
+</html>

@@ -1,13 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import User
 from datetime import date, timedelta
 
 # Create your models here.
-class User(models.Model):
-    user_id = models.IntegerField(primary_key=True)
-    email = models.EmailField
-    HN = models.CharField(max_length=50)
-    PW = models.CharField(max_length=50)
-
 class Library(models.Model):
     ISBN = models.BigIntegerField(default=3784000000000,primary_key=True)
     stock = models.IntegerField(default=1)

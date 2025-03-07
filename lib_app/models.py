@@ -5,8 +5,11 @@ from datetime import date, timedelta
 # Create your models here.
 
 class Library(models.Model):
-    ISBN = models.BigIntegerField(default=3784000000000,primary_key=True)
+    ISBN = models.BigIntegerField(default=9784000000000,primary_key=True)
     stock = models.IntegerField(default=1)
+    
+    def __str__(self):
+        return str(self.ISBN)
     
 class Book(models.Model):
     book_id = models.IntegerField(primary_key=True)
@@ -15,7 +18,10 @@ class Book(models.Model):
     writer = models.CharField(max_length=50)
     publisher = models.CharField(max_length=50)
     shelf = models.CharField(max_length=50)
-    c_code = models.BigIntegerField(default=1920000000000) 
+    c_code = models.BigIntegerField(default=1920000000000)
+    
+    def __str__(self):
+        return self.title 
     
 class Review(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)

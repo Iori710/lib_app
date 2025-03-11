@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>登録（仮）</title>
+</head>
+<body>
+    <form action ={% url "register" %} method="post"> <!--プロジェクトフォルダ"register"にデータが飛ぶはず-->
+        <input type="search" value="{{ request.GET.query }}" 
+               name="query" type="text" 
+               placeholder="ISBNを入力 ">
+    </form>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <button>登録</button>
+    
+</body>
+</html>

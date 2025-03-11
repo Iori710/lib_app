@@ -12,7 +12,6 @@ class Library(models.Model):
         return str(self.ISBN)
     
 class Book(models.Model):
-    book_id = models.IntegerField(primary_key=True)
     ISBN = models.ForeignKey(Library,on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     writer = models.CharField(max_length=50)
@@ -30,7 +29,7 @@ class Review(models.Model):
     review = models.TextField(null=True)
     
 class Reserve(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, primary_key=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     book_id = models.ForeignKey(Book, on_delete=models.CASCADE)
     lending_start = models.DateField(default=date.today())
     lending_end = models.DateField(default=date.today() + timedelta(days=7))

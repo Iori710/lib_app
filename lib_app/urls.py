@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth.views import LoginView
 from django.urls import path
-from .views import Top, Logout
+from .views import Top, Logout, Register
 
 urlpatterns = [
     path('login/',
@@ -31,4 +31,6 @@ urlpatterns = [
     path('top/', Top, name='top'),
     
     path('logout/', Logout, name='logout'),
+    
+    path('register/',Register, name='register'),
 ]

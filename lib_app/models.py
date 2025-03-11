@@ -13,11 +13,11 @@ class Library(models.Model):
     
 class Book(models.Model):
     ISBN = models.ForeignKey(Library,on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
+    title = models.CharField('タイトル', max_length=100)
     writer = models.CharField(max_length=50)
     publisher = models.CharField(max_length=50)
-    shelf = models.CharField(max_length=50)
-    c_code = models.BigIntegerField(default=1920000000000)
+    shelf = models.CharField('保管場所', max_length=50)
+    c_code = models.BigIntegerField('日本図書コード', default=1920000000000)
     
     def __str__(self):
         return self.title 

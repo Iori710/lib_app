@@ -26,10 +26,10 @@ def Register(request):
     
     if request.method == 'POST':
         try:
-            url = "https://ndlsearch.ndl.go.jp/api/opensearch?isbn=%d" % request.POST['ISBN']  
+            url = "https://ndlsearch.ndl.go.jp/api/opensearch?isbn=%d" % int(request.POST['ISBN'])  
             req = urllib.request.Request(url)
             with urllib.request.urlopen(req) as response:
-                xml_string = response.read()
+                xml_string = response.read().decode('UTF-8')
             root = ET.fromstring(xml_string)
                
         except urllib.error.HTTPError:
@@ -39,15 +39,26 @@ def Register(request):
                             "error_message":"正しく入力されていない、もしくは該当する書籍が存在しません"
                         }
                         )
-            
+       ##ここから後で34行目に移動     
         try:
-            n_stock = Library.objects.get(ISBN = int(request.POST['ISBN']))
-            n_stock.stock += 1
-            n_stock.save()    
+            n_ISBN = Library.objects.get(ISBN = int(request.POST['ISBN']))
+            n_ISBN.stock += 1
+            n_ISBN.save()    
         
         except:
             n_ISBN = Library(ISBN = int(request.POST['ISBN']))
             n_ISBN.save()
+        
+        book = Book(
+            ISBN = n_ISBN, 
+            title = root.find('rss/channel/item/title').text, 
+            writer = root.find('rss/channel/item/auther').text,
+            publisher = root.find('rss/channel/item/publisher').text,
+            shelf = request.POST['shelf'],
+            c_code = request.POST['c_code']
+        )
+        book.save()
+        #ここまで34行目に移動
     
     else:
         form1 = LibRegisterForm()

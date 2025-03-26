@@ -9,9 +9,9 @@
         {% csrf_token %}
         {{ form1.as_table }}
         {{ form2.as_table }}
+        <button type:"submit">登録</button>
     </form>
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-    <button>登録</button>
     
 </body>
 </html>

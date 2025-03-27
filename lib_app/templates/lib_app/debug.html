@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>登録デバッグページ</title>
+</head>
+<body>
+    <table>
+        <form action ={% url "debug" %} method="post"> <!--プロジェクトフォルダ"register"にデータが飛ぶはず-->
+            {% csrf_token %}
+            <tr>
+                <td></td>
+                <td>登録フォーム　デバッグ<td>
+            </tr>
+            {{ form1.as_table }}
+            {{ form2.as_table }}
+            <tr>
+                <td></td>
+                <td><button type:"submit">登録</button><td>
+            </tr>
+        </form>
+        {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
+        {% if debug %}
+            {%for i in debug %}
+                <a>{{ i }}</a><br>
+            {% endfor %}
+        {% endif %}
+    </table>
+</body>
+</html>

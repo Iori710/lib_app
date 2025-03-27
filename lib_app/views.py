@@ -38,8 +38,38 @@ def Register(request):
             with urllib.request.urlopen(req) as response:
                 xml_string = response.read().decode('UTF-8')
             root = ET.fromstring(xml_string)
-               
-        except error.HTTPError:
+            
+            try:
+                n_ISBN = Library.objects.get(ISBN = int(request.POST['ISBN']))
+                n_ISBN.stock += 1
+                n_ISBN.save()    
+        
+            except:
+                n_ISBN = Library(ISBN = int(request.POST['ISBN']))
+                n_ISBN.save()
+        
+            try:
+                book = Book(
+                    ISBN = n_ISBN, 
+                    title = root.find('channel/item/title').text, 
+                    writer = root.find('channel/item/{http://purl.org/dc/elements/1.1/}creator').text.replace(',',' '),
+                    publisher = root.find('channel/item/{http://purl.org/dc/elements/1.1/}publisher').text,
+                    shelf = request.POST['shelf'],
+                    c_code = request.POST['c_code']
+                    )
+                book.save()
+            except:
+                book = Book(
+                    ISBN = n_ISBN, 
+                    title = root.find('channel/item/title').text, 
+                    writer = root.find('channel/item/author').text.replace('著',' '),
+                    publisher = root.find('channel/item/{http://purl.org/dc/elements/1.1/}publisher').text,
+                    shelf = request.POST['shelf'],
+                    c_code = request.POST['c_code']
+                    )
+                book.save() 
+            
+        except:
             return render(request, 'lib_app/register.html',
                        {
                             'message':'正しく入力されていない、もしくは該当する書籍が存在しません',
@@ -47,26 +77,6 @@ def Register(request):
                             'form2':form2
                         }
                         )
-       ##ここから後で34行目に移動     
-        try:
-            n_ISBN = Library.objects.get(ISBN = int(request.POST['ISBN']))
-            n_ISBN.stock += 1
-            n_ISBN.save()    
-        
-        except:
-            n_ISBN = Library(ISBN = int(request.POST['ISBN']))
-            n_ISBN.save()
-        
-        book = Book(
-            ISBN = n_ISBN, 
-            title = root.find('rss/channel/item/title').text, 
-            writer = root.find('rss/channel/item/auther').text,
-            publisher = root.find('rss/channel/item/publisher').text,
-            shelf = request.POST['shelf'],
-            c_code = request.POST['c_code']
-        )
-        book.save()
-        #ここまで34行目に移動
         return render(request, 'lib_app/register.html',
                        {
                             'message':'登録しました',
@@ -110,3 +120,34 @@ def Search(request):
 def Logout(request):
     logout(request)
     return redirect('/login/')
+
+def Debug(request):
+    form1 = LibForm()
+    form2 = BookRegisterForm()
+    
+    if request.method == 'POST':
+        try:
+            url = 'https://ndlsearch.ndl.go.jp/api/opensearch?isbn=%d' % int(request.POST['ISBN'])  
+            req = urllib.request.Request(url)
+            with urllib.request.urlopen(req) as response:
+                xml_string = response.read().decode('UTF-8')
+            root = ET.fromstring(xml_string)
+               
+        except error.HTTPError:
+            return render(request, 'lib_app/register.html',
+                       {
+                            'message':'正しく入力されていない、もしくは該当する書籍が存在しません',
+                            'form1':form1,
+                            'form2':form2
+                        }
+                        )
+         
+        title = root.find('channel/item/title').text 
+        writer = root.find('channel/item/{http://purl.org/dc/elements/1.1/}creator').text.replace(',',' ')
+        publisher = root.find('channel/item/{http://purl.org/dc/elements/1.1/}publisher').text
+        shelf = request.POST['shelf']
+        c_code = request.POST['c_code']
+        debug = [title, writer, publisher, shelf, c_code]
+        return render(request, 'lib_app/debug.html', {'form1':form1, 'form2':form2, 'debug':debug})
+    else:    
+        return render(request,'lib_app/debug.html',{ 'form1':form1, 'form2':form2 })

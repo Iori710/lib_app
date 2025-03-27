@@ -35,5 +35,7 @@ urlpatterns = [
     
     path('search/', views.Search, name='search'),
     
-    path('mypage/', views.Mypage, name='mypage')
+    path('mypage/', views.Mypage, name='mypage'),
+    
+    path('debug', views.Debug, name='debug')
 ]

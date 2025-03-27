@@ -5,13 +5,21 @@
     <title>登録（仮）</title>
 </head>
 <body>
-    <form action ={% url "register" %} method="post"> <!--プロジェクトフォルダ"register"にデータが飛ぶはず-->
-        {% csrf_token %}
-        {{ form1.as_table }}
-        {{ form2.as_table }}
-        <button type:"submit">登録</button>
-    </form>
-    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-    
+    <table>
+        <form action ={% url "register" %} method="post"> <!--プロジェクトフォルダ"register"にデータが飛ぶはず-->
+            {% csrf_token %}
+            <tr>
+                <td></td>
+                <td>登録フォーム<td>
+            </tr>
+            {{ form1.as_table }}
+            {{ form2.as_table }}
+            <tr>
+                <td></td>
+                <td><button type:"submit">登録</button><td>
+            </tr>
+        </form>
+        {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
+    </table>
 </body>
 </html>

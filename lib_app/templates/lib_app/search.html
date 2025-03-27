@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<!--後でちゃんと作る-->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>検索結果（仮）</title>
+</head>
+<body>
+    {% for i in result %}
+            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+    {% endfor %}
+</body>
+</html>

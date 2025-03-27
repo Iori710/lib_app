@@ -5,26 +5,22 @@
     <title>トップページ（仮）</title>
 </head>
 <body>
-    <form method="get">
-        <input type="search" value="{{ request.GET.query }}" 
-               name="query" type="text" 
-               placeholder="タイトルを入力 ">
-    </form>
-    <form method="get">
-        <input type="search" value="{{ request.GET.query }}" 
-               name="query" type="text" 
-               placeholder="著者を入力 ">
-    </form>
-    <form method="get">
-        <input type="search" value="{{ request.GET.query }}" 
-               name="query" type="text" 
-               placeholder="出版社を入力 ">
-    </form>
-    <form method="get">
-        <input type="search" value="{{ request.GET.query }}" 
-               name="query" type="text" 
-               placeholder="ISBNを入力 ">
-    </form>
-    <button>検索</button>
+    <a>ようこそ、{{ user }}さん</a> <a href= {% url "mypage" %}>マイページ</a>
+    <table>
+        <form action ={% url "search" %} method="post"> <!--プロジェクトフォルダ"search"にデータが飛ぶはず-->
+            {% csrf_token %}
+            <tr>
+                <td></td>
+                <td>検索フォーム<td>
+            </tr>
+            {{ form1.as_table }}
+            {{ form2.as_table }}
+            <tr>
+                <td></td>
+                <td><button type:"submit">検索</button><td>
+            </tr>
+        </form>
+        {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
+    </table>
 </body>
 </html>

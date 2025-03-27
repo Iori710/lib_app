@@ -14,8 +14,8 @@ class Library(models.Model):
 class Book(models.Model):
     ISBN = models.ForeignKey(Library,on_delete=models.CASCADE)
     title = models.CharField('タイトル', max_length=100)
-    writer = models.CharField(max_length=50)
-    publisher = models.CharField(max_length=50)
+    writer = models.CharField('著者', max_length=50)
+    publisher = models.CharField('出版社', max_length=50)
     shelf = models.CharField('保管場所', max_length=50)
     c_code = models.BigIntegerField('日本図書コード', default=1920000000000)
     

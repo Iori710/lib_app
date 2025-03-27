@@ -1,18 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django import forms
 from django.http import HttpResponse
-from django.contrib.auth import get_user_model, logout
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required 
 from django.views.generic import View
 from django.db.models import Q
 from .models import Book, Library
+from urllib import error
 import urllib.request
-import urllib.error
-import urllib.parse
 import xml.etree.ElementTree as ET
 
+
 # Create your views here.
-class LibRegisterForm(forms.ModelForm):
+class LibForm(forms.ModelForm):
     class Meta:
         model = Library
         fields = ['ISBN']
@@ -21,22 +21,30 @@ class BookRegisterForm(forms.ModelForm):
     class Meta:
         model = Book
         fields = ['shelf', 'c_code']
+        
+class BookSearchForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = ['title', 'writer', 'publisher']
 
 def Register(request):
+    form1 = LibForm()
+    form2 = BookRegisterForm()
     
     if request.method == 'POST':
         try:
-            url = "https://ndlsearch.ndl.go.jp/api/opensearch?isbn=%d" % int(request.POST['ISBN'])  
+            url = 'https://ndlsearch.ndl.go.jp/api/opensearch?isbn=%d' % int(request.POST['ISBN'])  
             req = urllib.request.Request(url)
             with urllib.request.urlopen(req) as response:
                 xml_string = response.read().decode('UTF-8')
             root = ET.fromstring(xml_string)
                
-        except urllib.error.HTTPError:
-           
-            return render(request, "lib_app/register.html",
+        except error.HTTPError:
+            return render(request, 'lib_app/register.html',
                        {
-                            "error_message":"正しく入力されていない、もしくは該当する書籍が存在しません"
+                            'message':'正しく入力されていない、もしくは該当する書籍が存在しません',
+                            'form1':form1,
+                            'form2':form2
                         }
                         )
        ##ここから後で34行目に移動     
@@ -59,18 +67,45 @@ def Register(request):
         )
         book.save()
         #ここまで34行目に移動
+        return render(request, 'lib_app/register.html',
+                       {
+                            'message':'登録しました',
+                            'form1':form1,
+                            'form2':form2
+                        }
+                        )
     
-    else:
-        form1 = LibRegisterForm()
-        form2 = BookRegisterForm()
-        
-    return render(request,"lib_app/register.html",{ "form1":form1, "form2":form2 })
+    else:    
+        return render(request,'lib_app/register.html',{ 'form1':form1, 'form2':form2 })
         
 
-@login_required(login_url="/login/")#ログインしていない場合ログイン画面に遷移する
+@login_required#ログインしていない場合ログイン画面に遷移する
 def Top(request):#内容は仮
-    book_list = Book.objects.all()
-    return render(request, "lib_app/top.html", {'book_list': book_list})
+    user = request.user
+    form1 = BookSearchForm()
+    form2 = LibForm()
+    return render(request, 'lib_app/top.html', { 'user':user, 'form1':form1, 'form2':form2 })
+
+@login_required
+def Mypage(request):
+    user = request.user
+    return render(request,'lib_app/mypage.html', { 'user':user })
+
+@login_required
+def Search(request):
+    if request.method == 'POST':
+        result = Book.objects.filter(
+            Q(
+                title__icontains=request.POST['title'], 
+                writer__icontains=request.POST['writer'], 
+                publisher__icontains=request.POST['publisher']
+            ) | Q( 
+                ISBN__icontains=request.POST['ISBN']
+            )
+        )
+        return render(request, 'lib_app/search.html', { 'result':result })
+    else:    
+        return redirect('/top/')
 
 def Logout(request):
     logout(request)

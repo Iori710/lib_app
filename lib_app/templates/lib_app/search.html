@@ -6,8 +6,23 @@
     <title>検索結果（仮）</title>
 </head>
 <body>
-    {% for i in result %}
-        <a>{{}}</a><br>
-    {% endfor %}
+    <h2>「{{keyword}}」の検索結果</h2>
+    <form action ={% url "search" %} method="get"> <!--プロジェクトフォルダ"search"にデータが飛ぶはず-->
+        <input type="text" name="keyword" value={{keyword}}>
+        <button type="submit">検索</button>
+    </form>
+    {% if result.count == 0 %}
+        <h3>該当書籍はありません</h3>
+    {% else %}
+        {% for i in result %}
+            <img src="https://ndlsearch.ndl.go.jp/thumbnail/{{i.ISBN}}.jpg" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNSA4LjVjMC0uODI4LjY3Mi0xLjUgMS41LTEuNXMxLjUuNjcyIDEuNSAxLjVjMCAuODI5LS42NzIgMS41LTEuNSAxLjVzLTEuNS0uNjcxLTEuNS0xLjV6bTkgLjVsLTIuNTE5IDQtMi40ODEtMS45Ni00IDUuOTZoMTRsLTUtOHptOC00djE0aC0yMHYtMTRoMjB6bTItMmgtMjR2MThoMjR2LTE4eiIvPjwvc3ZnPg==';" />
+            <a>タイトル:{{i.title}}</a>
+            <a>著者:{{i.writer}}</a>
+            <a>出版社:{{i.publisher}}</a>
+            <a href="{% url "detail" i.ISBN %}">詳細情報を見る</a>
+            <hr>
+        {% endfor %}
+    {% endif %}
+    <a href="{% url "top" %}">トップページに戻る</a>
 </body>
 </html>

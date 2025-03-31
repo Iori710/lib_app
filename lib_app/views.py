@@ -5,6 +5,8 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required 
 from django.views.generic import View
 from django.db.models import Q
+from functools import reduce
+from operator import and_
 from .models import Book, Library
 from urllib import error
 import urllib.request
@@ -103,19 +105,33 @@ def Mypage(request):
 
 @login_required
 def Search(request):
-    if request.method == 'POST':
-        result = Book.objects.filter(
-            Q(
-                title__icontains=request.POST['title'], 
-                writer__icontains=request.POST['writer'], 
-                publisher__icontains=request.POST['publisher']
-            ) | Q( 
-                ISBN__icontains=request.POST['ISBN']
-            )
-        )
-        return render(request, 'lib_app/search.html', { 'result':result })
+    if request.method == 'GET':
+        keyword = request.GET.get('keyword')
+
+        if keyword:
+            exclusion_list = set([' ', '　'])
+            q_list = ''
+            
+            for i in keyword:
+                if i in exclusion_list:
+                    pass
+                else:
+                    q_list += i
+                
+        query = reduce(
+            and_,[
+                Q(title__icontains=q)|
+                Q(writer__icontains=q)|
+                Q(publisher__icontains=q) for q in q_list]
+            )        
+        result = Book.objects.filter(query).order_by('title').distinct('title')
+        return render(request, 'lib_app/search.html', { 'result':result, 'keyword':keyword })
     else:    
         return redirect('/top/')
+
+@login_required    
+def Detail(request,ISBN):
+    return render(request, 'lib_app/detail.html', {'ISBN':ISBN})
 
 def Logout(request):
     logout(request)

@@ -5,22 +5,11 @@
     <title>トップページ（仮）</title>
 </head>
 <body>
-    <a>ようこそ、{{ user }}さん</a> <a href= {% url "mypage" %}>マイページ</a>
-    <table>
-        <form action ={% url "search" %} method="post"> <!--プロジェクトフォルダ"search"にデータが飛ぶはず-->
-            {% csrf_token %}
-            <tr>
-                <td></td>
-                <td>検索フォーム<td>
-            </tr>
-            {{ form1.as_table }}
-            {{ form2.as_table }}
-            <tr>
-                <td></td>
-                <td><button type:"submit">検索</button><td>
-            </tr>
-        </form>
-        {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
-    </table>
+    <a>ようこそ、{{ user }}さん</a> <a href= {% url "mypage" %}>マイページ</a><br>
+    <form action ={% url "search" %} method="get"> <!--プロジェクトフォルダ"search"にデータが飛ぶはず-->
+        <input type="text" name="keyword" placeholder="キーワードを入力">
+        <button type="submit">検索</button>
+    </form>
+    {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
 </body>
 </html>

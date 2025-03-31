@@ -37,5 +37,7 @@ urlpatterns = [
     
     path('mypage/', views.Mypage, name='mypage'),
     
-    path('debug', views.Debug, name='debug')
+    path('debug/', views.Debug, name='debug'),
+    
+    path('detail/<int:ISBN>', views.Detail, name='detail'),
 ]

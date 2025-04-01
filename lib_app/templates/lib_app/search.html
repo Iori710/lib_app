@@ -7,7 +7,7 @@
 </head>
 <body>
     <h2>「{{keyword}}」の検索結果</h2>
-    <form action ={% url "search" %} method="get"> <!--プロジェクトフォルダ"search"にデータが飛ぶはず-->
+    <form action ={% url "search" %} method="get"> <!--プロジェクトファイル"search"にデータが飛ぶはず-->
         <input type="text" name="keyword" value={{keyword}}>
         <button type="submit">検索</button>
     </form>

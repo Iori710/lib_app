@@ -18,6 +18,7 @@ class Book(models.Model):
     publisher = models.CharField('出版社', max_length=50)
     shelf = models.CharField('保管場所', max_length=50)
     c_code = models.BigIntegerField('日本図書コード', default=1920000000000)
+    lend_ok = models.BooleanField('貸出可', default=True)
     
     def __str__(self):
         return self.title 
@@ -27,6 +28,9 @@ class Review(models.Model):
     ISBN = models.ForeignKey(Library, on_delete=models.CASCADE)
     stars = models.IntegerField(default=0)
     review = models.TextField(null=True)
+    
+    def __str__(self):
+        return self.review
     
 class Reserve(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -3,29 +3,23 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>検索結果（仮）</title>
+    <title>{{title}}のレビュー（仮）</title>
 </head>
 <body>
-    <h1>{{info.title}}</h1>
+    <h1>{{title}}のレビュー</h1>
     <img src="https://ndlsearch.ndl.go.jp/thumbnail/{{ISBN}}.jpg" onerror="this.onerror=null;this.src=
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGV
     pZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNSA4LjVjMC0uODI4LjY3Mi0xLjUgMS41LTEuNXMxLjUuN
     jcyIDEuNSAxLjVjMCAuODI5LS42NzIgMS41LTEuNSAxLjVzLTEuNS0uNjcxLTEuNS0xLjV6bTkgLjVsLTIuNTE5IDQtMi40ODE
     tMS45Ni00IDUuOTZoMTRsLTUtOHptOC00djE0aC0yMHYtMTRoMjB6bTItMmgtMjR2MThoMjR2LTE4eiIvPjwvc3ZnPg==';" /><br>
-    <a>著者：{{info.writer}}</a><br>
-    <a>出版社：{{info.publisher}}</a><br>
     <button>予約する</button><br>
+    <p><strong>平均評価：{{average}}</strong></p>
     <h2>レビュー</h2>
-    {% if review.count == 0 %}
-        <a>レビューはありません</a><br>
-    {% else %}
-        {% for i in review %}
-            <hr>
-            <h3>評価：{{i.stars}}</h3>
-            <a>{{i.review}}</a>
-        {% endfor %}
-        <hr><br><a>… </a><a href="{% url "review" ISBN %}" >もっと見る</a>
-    {% endif %}
-    <br><a href="{% url "top" %}">トップに戻る</a>
+    {% for i in review %}
+        <hr>
+        <h3>評価：{{i.stars}}</h3>
+        <a>{{i.review}}</a>
+    {% endfor %}
+    <hr><br><a href="{{request.META.HTTP_REFERER}}">戻る</a>
 </body>
 </html>

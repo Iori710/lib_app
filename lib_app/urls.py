@@ -40,4 +40,6 @@ urlpatterns = [
     path('debug/', views.Debug, name='debug'),
     
     path('detail/<int:ISBN>', views.Detail, name='detail'),
+    
+    path('review/<int:ISBN>', views.BookReview, name='review'),
 ]

@@ -42,4 +42,10 @@ urlpatterns = [
     path('detail/<int:ISBN>', views.Detail, name='detail'),
     
     path('review/<int:ISBN>', views.BookReview, name='review'),
+    
+    path('reserve/<int:ISBN>', views.BookReserve, name='reserve'),
+    
+    path('reserving/<int:ISBN>', views.BookReserving, name='reserving'),
+
+    path('reserved/<int:ISBN>', views.BookReserved, name='reserved'),
 ]

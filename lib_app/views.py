@@ -3,11 +3,16 @@ from django import forms
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required 
 from django.db.models import Q, Avg
+from django.http import Http404, HttpResponse
+from datetime import timedelta
 from functools import reduce
 from operator import and_
-from .models import Book, Library, Review
+from .models import Book, Library, Review, Reserve
 import urllib.request
 import xml.etree.ElementTree as ET
+import bootstrap_datepicker_plus.widgets as datetimepicker
+import json
+import time
 
 #なぜかforms.pyを作成・インポートしても反応しないのでここに作る
 class LibForm(forms.ModelForm):
@@ -24,6 +29,19 @@ class BookSearchForm(forms.ModelForm):
     class Meta:
         model = Book
         fields = ['title', 'writer', 'publisher']
+        
+class ReserveForm(forms.Form):
+    class Meta:
+        model = Reserve
+        fields = ['lending_start', 'lending_end']
+        widgets = {
+            'lending_start':datetimepicker.DatePickerInput(
+                format='%Y-%m-%d',
+                ),
+            'lending_end':datetimepicker.DatePickerInput(
+                format='%Y-%m-%d',
+                ),
+        }
 
 # Create your views here.
 def Register(request):
@@ -140,8 +158,45 @@ def BookReview(request,ISBN):
     return render(request, 'lib_app/review.html', {'title':title, 'review':review, 'average':average, 'ISBN':ISBN})
 
 @login_required
-def Reserve(request,ISBN):
-    return
+def BookReserve(request,ISBN):
+        return render(request, 'lib_app/reserve.html', {'ISBN':ISBN})
+    
+@login_required
+def BookReserving(request,ISBN):#予約登録用
+    
+    if request.method == 'GET':
+        raise Http404()
+    
+    datas = json.loads(request.body)
+    
+    reserveform = ReserveForm(datas)
+    if reserveform.is_valid() == False:
+        raise Http404()
+    
+    lending_start = datas['lending_start']
+    lending_end = datas['lending_end']
+    book_id_ = Book.objects.filter(ISBN__exact=ISBN)
+    
+    formatted_lending_start = time.strftime(
+        "%Y-%m-%d", time.localtime(lending_start / 1000))
+    formatted_lending_end = time.strftime(
+        "%Y-%m-%d", time.localtime(lending_end / 1000))
+    
+    reserve = Reserve(
+        user_id = request.user,
+        book_id = book_id_,
+        lending_start = formatted_lending_start,
+        lending_end = formatted_lending_end
+    )
+    reserve.save()
+    
+    return HttpResponse("")
+
+@login_required
+def BookReserved(request,ISBN):
+    info = Reserve.objects.filter(book_id__ISBN__exact=ISBN, user_id__exact=request.user).order_by('-id')[0] #最新予約を取得
+    book = Book.objects.gets(id__exact=info.book_id)
+    return render(request, 'lib_app/reserved.html', {'ISBN':ISBN, 'info':info, 'book':book})
 
 def Logout(request):
     logout(request)

@@ -8,26 +8,41 @@ document.addEventListener('DOMContentLoaded', function() {
         // 日付をクリック、または範囲を選択したイベント
         selectable: true,
         select: function (info) {
-            let checkReserve = confirm("予約を追加しますか？\n" +
-                "開始日: " + info.start + "\n" +
-                "終了日: " + info.end);
+            let checkReserve = confirm("予約を追加しますか？");
             if (checkReserve) {
-                
-        // 登録処理の呼び出し
+                // 登録処理の呼び出し
                 axios
-                    .post(`/reserving/${ISBN}`, {
+                    .post(`/reserving/${ISBN}/`, {
                         lending_start: info.start.valueOf(),
                         lending_end: info.end.valueOf(),
                     })
                     .then(() => {
-                        window.location.href = `/reserving/${ISBN}`;
+                        // 成功時に別のURLに遷移
+                        window.location.href = `/reserved/${ISBN}/`;
                     })
                     .catch(() => {
-        // バリデーションエラーなど
+                        // バリデーションエラーなど
                         alert("予約ができませんでした。");
-                    }); 
+                    });
             }
+        },
+
+        events: function (info, successCallback, failureCallback) {
+
+            axios
+                .post(`/calendar/${ISBN}/`, {
+                    start_date: info.start.valueOf(),
+                    end_date: info.end.valueOf(),
+                })
+                .then((response) => {
+                    calendar.removeAllEvents();
+                    successCallback(response.data);
+                })
+                .catch(() => {
+                    // バリデーションエラーなど
+                    alert("読み込みに失敗しました");
+                });
         },
     });
     calendar.render();
-  });
+});

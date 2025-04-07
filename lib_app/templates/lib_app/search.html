@@ -22,7 +22,7 @@
             <a>タイトル:{{i.title}}</a>
             <a>著者:{{i.writer}}</a>
             <a>出版社:{{i.publisher}}</a>
-            <a href="{% url "detail" i.ISBN %}">詳細情報を見る</a>
+            <br><button onclick="location.href='{% url "reserve" i.ISBN %}'">予約する</button><button onclick="location.href='{% url "detail" i.ISBN %}'">詳細情報を見る</button>
             <hr>
         {% endfor %}
     {% endif %}

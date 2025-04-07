@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import date, timedelta
+
 
 # Create your models here.
 
@@ -34,8 +34,8 @@ class Review(models.Model):
 class Reserve(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     book_id = models.ForeignKey(Book, on_delete=models.CASCADE)
-    lending_start = models.DateField("貸出日", default=date.today())
-    lending_end = models.DateField("返却日", default=date.today() + timedelta(days=7))
+    lending_start = models.DateField("貸出日")
+    lending_end = models.DateField("返却日")
     
 class Lending(Reserve):
     returned = models.BooleanField(default=False)

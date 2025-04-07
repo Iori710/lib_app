@@ -39,13 +39,15 @@ urlpatterns = [
     
     path('debug/', views.Debug, name='debug'),
     
-    path('detail/<int:ISBN>', views.Detail, name='detail'),
+    path('detail/<int:ISBN>/', views.Detail, name='detail'),
     
-    path('review/<int:ISBN>', views.BookReview, name='review'),
+    path('review/<int:ISBN>/', views.BookReview, name='review'),
     
-    path('reserve/<int:ISBN>', views.BookReserve, name='reserve'),
+    path('calendar/<int:ISBN>/', views.BookCalendar, name='calendar'),
     
-    path('reserving/<int:ISBN>', views.BookReserving, name='reserving'),
+    path('reserve/<int:ISBN>/', views.BookReserve, name='reserve'),
+    
+    path('reserving/<int:ISBN>/', views.BookReserving, name='reserving'),
 
-    path('reserved/<int:ISBN>', views.BookReserved, name='reserved'),
+    path('reserved/<int:ISBN>/', views.BookReserved, name='reserved'),
 ]

@@ -13,6 +13,7 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 <body>
+    <h1>「{{info.title}}」の予約</h1>
     {% csrf_token %}
     <img src="https://ndlsearch.ndl.go.jp/thumbnail/{{ISBN}}.jpg" onerror="this.onerror=null;this.src=
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGV
@@ -27,8 +28,6 @@
     rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" 
     crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/5.0.5/js/bootstrap-datetimepicker.min.js"></script>
-    <script type="text/javascript" src="/static/bootstrap_datepicker_plus/js/datepicker-widget.js"></script> 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script> 
 </body>
 </html>

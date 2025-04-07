@@ -3,8 +3,8 @@ from django import forms
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required 
 from django.db.models import Q, Avg
-from django.http import Http404, HttpResponse
-from datetime import timedelta
+from django.http import Http404, HttpResponse, JsonResponse
+from datetime import timedelta, datetime  # 必要に応じてインポート
 from functools import reduce
 from operator import and_
 from .models import Book, Library, Review, Reserve
@@ -13,9 +13,9 @@ import xml.etree.ElementTree as ET
 import bootstrap_datepicker_plus.widgets as datetimepicker
 import json
 import time
+from django.urls import reverse
 
-#なぜかforms.pyを作成・インポートしても反応しないのでここに作る
-class LibForm(forms.ModelForm):
+class LibForm(forms.ModelForm):#なぜかforms.pyを作成・インポートしても反応しないのでここに作る
     class Meta:
         model = Library
         fields = ['ISBN']
@@ -30,18 +30,14 @@ class BookSearchForm(forms.ModelForm):
         model = Book
         fields = ['title', 'writer', 'publisher']
         
-class ReserveForm(forms.Form):
+class ReserveForm(forms.ModelForm):
     class Meta:
         model = Reserve
         fields = ['lending_start', 'lending_end']
-        widgets = {
-            'lending_start':datetimepicker.DatePickerInput(
-                format='%Y-%m-%d',
-                ),
-            'lending_end':datetimepicker.DatePickerInput(
-                format='%Y-%m-%d',
-                ),
-        }
+
+class CalendarForm(forms.Form):
+    start_date = forms.IntegerField(required=True)
+    end_date = forms.IntegerField(required=True)
 
 # Create your views here.
 def Register(request):
@@ -159,49 +155,122 @@ def BookReview(request,ISBN):
 
 @login_required
 def BookReserve(request,ISBN):
-        return render(request, 'lib_app/reserve.html', {'ISBN':ISBN})
-    
-@login_required
-def BookReserving(request,ISBN):#予約登録用
-    
+    info = Book.objects.filter(ISBN__exact=ISBN)[0]
+    return render(request, 'lib_app/reserve.html', {'ISBN':ISBN, 'info':info})
+
+def BookCalendar(request,ISBN):
     if request.method == 'GET':
         raise Http404()
     
     datas = json.loads(request.body)
     
-    reserveform = ReserveForm(datas)
-    if reserveform.is_valid() == False:
+    calendarForm = CalendarForm(datas)
+    if not calendarForm.is_valid:
         raise Http404()
     
-    lending_start = datas['lending_start']
-    lending_end = datas['lending_end']
-    book_id_ = Book.objects.filter(ISBN__exact=ISBN)
+    start = datas['start_date']
+    end = datas['end_date']
     
-    formatted_lending_start = time.strftime(
-        "%Y-%m-%d", time.localtime(lending_start / 1000))
-    formatted_lending_end = time.strftime(
-        "%Y-%m-%d", time.localtime(lending_end / 1000))
+    # 日付に変換。JavaScriptのタイムスタンプはミリ秒なので秒に変換
+    formatted_start_date = time.strftime(
+        "%Y-%m-%d", time.localtime(start / 1000))
+    formatted_end_date = time.strftime(
+        "%Y-%m-%d", time.localtime(end / 1000))
     
-    reserve = Reserve(
-        user_id = request.user,
-        book_id = book_id_,
-        lending_start = formatted_lending_start,
-        lending_end = formatted_lending_end
+    # 予約情報を取得
+    reserve_info = Reserve.objects.filter(
+        book_id__ISBN__exact = ISBN,
+        lending_start__lte = formatted_end_date,
+        lending_end__gte = formatted_start_date
     )
-    reserve.save()
+
+    # 予約情報をJSON形式に変換
+    events = []
+    for info in reserve_info:
+        events.append({
+            'title':'予約済み',
+            'start': info.lending_start,
+            'end': info.lending_end + timedelta(days=1),  # 終了日を1日後に設定
+        })
+
+    return JsonResponse(events, safe=False)
     
+@login_required
+def BookReserving(request, ISBN):  # 予約登録用
+    if request.method == 'GET':
+        raise Http404()
+
+    datas = json.loads(request.body)
+
+    reserveform = ReserveForm(datas)
+    if reserveform.is_valid:
+        lending_start = datas['lending_start']
+        lending_end = datas['lending_end']
+        library = Library.objects.get(ISBN__exact=ISBN)
+
+        formatted_lending_start = time.strftime(
+            "%Y-%m-%d", time.localtime(lending_start / 1000))
+        formatted_lending_end = time.strftime(
+            "%Y-%m-%d", time.localtime(lending_end / 1000))
+
+        # lending_endを1日前に調整
+        lending_end_date = datetime.strptime(formatted_lending_end, "%Y-%m-%d")
+        adjusted_lending_end = lending_end_date - timedelta(days=1)
+        lending_end_date = adjusted_lending_end.strftime("%Y-%m-%d")
+        
+        # 予約期間中の「既に予約されている冊数」を検索
+        reserved_books = Reserve.objects.filter(
+            book_id__ISBN__exact = ISBN,
+        ).exclude(
+            Q(lending_start__gte = lending_end_date)|
+            Q(lending_end__lte = formatted_lending_start)
+        ).values('book_id')
+        
+        # 在庫数を超えている場合は予約を拒否
+        if  reserved_books.count() >= library.stock:
+            raise Http404()
+        
+        available_books = Book.objects.filter(
+            ISBN__exact = ISBN,
+        ).exclude(
+            id__in = reserved_books
+        )
+        
+        # 最初の貸出可能な書籍を取得
+        book_to_reserve = available_books.first()
+
+        reserve = Reserve(
+            user_id = request.user,
+            book_id = book_to_reserve,
+            lending_start = formatted_lending_start,
+            lending_end = lending_end_date,  
+        )
+        reserve.save()
+
     return HttpResponse("")
 
 @login_required
 def BookReserved(request,ISBN):
-    info = Reserve.objects.filter(book_id__ISBN__exact=ISBN, user_id__exact=request.user).order_by('-id')[0] #最新予約を取得
-    book = Book.objects.gets(id__exact=info.book_id)
+    info = Reserve.objects.filter(user_id__exact=request.user).order_by('-id')[0] #最新予約を取得
+    book = info.book_id
     return render(request, 'lib_app/reserved.html', {'ISBN':ISBN, 'info':info, 'book':book})
 
 def Logout(request):
     logout(request)
-    return redirect('/login/')
+    return redirect(reverse('login'))
 
 def Debug(request): #デバッグ用 完成したら消す
-    form1 = LibForm()
-    form2 = BookRegisterForm()
+    reserved_books = Reserve.objects.filter(
+            book_id__ISBN__exact=9784764106871,
+        ).exclude(
+            Q(lending_start__gte='2025-04-16')|
+            Q(lending_end__lte='2025-04-13')
+        ).values('book_id')
+        
+    available_books = Book.objects.filter(
+            ISBN__exact=9784764106871,
+        ).exclude(
+            id__in= '1'
+        )
+    
+    return render(request, 'lib_app/debug.html', {'reserve':reserved_books,'book':available_books}) #最初の貸出可能な書籍を取得

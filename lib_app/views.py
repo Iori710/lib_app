@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django import forms
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required 
@@ -7,13 +7,16 @@ from django.http import Http404, HttpResponse, JsonResponse
 from datetime import timedelta, datetime  # 必要に応じてインポート
 from functools import reduce
 from operator import and_
-from .models import Book, Library, Review, Reserve
+from .models import Book, Library, Review, Reserve, Lending
 import urllib.request
 import xml.etree.ElementTree as ET
 import bootstrap_datepicker_plus.widgets as datetimepicker
 import json
 import time
 from django.urls import reverse
+import logging
+
+logger = logging.getLogger(__name__)
 
 class LibForm(forms.ModelForm):#なぜかforms.pyを作成・インポートしても反応しないのでここに作る
     class Meta:
@@ -216,7 +219,7 @@ def BookReserving(request, ISBN):  # 予約登録用
         # lending_endを1日前に調整
         lending_end_date = datetime.strptime(formatted_lending_end, "%Y-%m-%d")
         adjusted_lending_end = lending_end_date - timedelta(days=1)
-        lending_end_date = adjusted_lending_end.strftime("%Y-%m-%d")
+        lending_end_date_1 = adjusted_lending_end.strftime("%Y-%m-%d")
         
         # 予約期間中の「既に予約されている冊数」を検索
         reserved_books = Reserve.objects.filter(
@@ -243,7 +246,7 @@ def BookReserving(request, ISBN):  # 予約登録用
             user_id = request.user,
             book_id = book_to_reserve,
             lending_start = formatted_lending_start,
-            lending_end = lending_end_date,  
+            lending_end = lending_end_date_1,  
         )
         reserve.save()
 
@@ -255,22 +258,115 @@ def BookReserved(request,ISBN):
     book = info.book_id
     return render(request, 'lib_app/reserved.html', {'ISBN':ISBN, 'info':info, 'book':book})
 
+@login_required
+def Check(request):
+
+    if request.method == 'POST':
+        c_code = request.POST['keyword']
+        try:
+            returned_book = Lending.objects.get(
+                book_id__c_code__exact = c_code, returned = False
+            )
+            request.session['returned_book_id'] = returned_book.id
+            return redirect(reverse('returned'))
+        except Lending.DoesNotExist:
+            try:
+                lending_book = Reserve.objects.filter(
+                    book_id__c_code__exact = c_code,
+                    user_id__exact=request.user,
+                    lending_start__lte = datetime.now()
+                ).exclude(lending_end__lt = datetime.now()).first()
+                
+                #セッションにデータ保存
+                request.session['lending_book_id'] = lending_book.id
+                return redirect(reverse('lending'))
+            except:
+                logger.debug("No reserve found.")
+                return render(request, 'lib_app/check.html', {'message': '正しく入力されていない、もしくは貸出日になっていません'})
+    else:
+        return render(request, 'lib_app/check.html')
+
+def BookReturned(request):
+    id_ = request.session.get('returned_book_id')
+    returned_book = get_object_or_404(Lending, id__exact=id_)
+    if request.method =='POST':
+        returned_book.returned = True
+        returned_book.save()
+        
+        
+        isbn = returned_book.book_id.ISBN
+        title = returned_book.book_id.title
+        writer = returned_book.book_id.writer
+        #セッションからデータ削除
+        del request.session['returned_book_id']
+        
+        return render(request, 'lib_app/returned.html', {
+            'returned_book':returned_book, 'ISBN':isbn, 'title':title, 'writer':writer
+        })  
+    else:
+        isbn = returned_book.book_id.ISBN
+        title = returned_book.book_id.title
+        writer = returned_book.book_id.writer        
+        return render(request, 'lib_app/returned_check.html', {
+            'returned_book':returned_book, 'ISBN':isbn, 'title':title, 'writer':writer
+        })
+
+def BookLending(request):
+    id_ = request.session.get('lending_book_id')
+    lending_book = get_object_or_404(Reserve, id__exact=id_)
+    if request.method =='POST':
+        lend_book = Lending(
+            user_id = request.user,
+            book_id = lending_book.book_id,
+            lending_start = lending_book.lending_start,
+            lending_end = lending_book.lending_end,
+            returned = False
+        )   
+        lend_book.save()
+        
+        isbn = lending_book.book_id.ISBN
+        title = lending_book.book_id.title
+        writer = lending_book.book_id.writer
+        #セッションからデータ削除
+        del request.session['lending_book_id']
+        
+        return render(request, 'lib_app/lending.html', {'lending_book':lending_book})  
+    else:
+        isbn = lending_book.book_id.ISBN
+        title = lending_book.book_id.title
+        writer = lending_book.book_id.writer   
+        return render(request, 'lib_app/lending_check.html', {
+            'lending_book':lending_book, 'ISBN':isbn, 'title':title, 'writer':writer
+        })
+
 def Logout(request):
     logout(request)
     return redirect(reverse('login'))
 
 def Debug(request): #デバッグ用 完成したら消す
-    reserved_books = Reserve.objects.filter(
-            book_id__ISBN__exact=9784764106871,
-        ).exclude(
-            Q(lending_start__gte='2025-04-16')|
-            Q(lending_end__lte='2025-04-13')
-        ).values('book_id')
-        
-    available_books = Book.objects.filter(
-            ISBN__exact=9784764106871,
-        ).exclude(
-            id__in= '1'
-        )
-    
-    return render(request, 'lib_app/debug.html', {'reserve':reserved_books,'book':available_books}) #最初の貸出可能な書籍を取得
+    if request.method == 'POST':
+        c_code = request.POST['keyword']
+        try:
+            returned_book = Lending.objects.get(
+                book_id__c_code__exact = c_code, returned = False
+            )
+            
+            #セッションにデータ保存
+            request.session['returned_book_id'] = returned_book.id
+            return render(request, 'lib_app/debug.html', {'message':'返却', 'c_code':c_code, 'returned_book':returned_book})
+        except:
+            try:
+                lending_book = Reserve.objects.filter(
+                    book_id__c_code__exact = c_code, 
+                    user_id__exact=request.user,
+                    lending_start__lte = datetime.now()
+                ).exclude(lending_end__lt = datetime.now()).first()
+                
+                #セッションにデータ保存
+                request.session['lending_book_id'] = lending_book.id
+                return render(request, 'lib_app/debug.html', {'message':'貸出', 'c_code':c_code, 'lending_book':lending_book})
+            except:
+                return render(request, 'lib_app/debug.html', {'message':'error'})
+    else:
+        return render(request, 'lib_app/debug.html')
+

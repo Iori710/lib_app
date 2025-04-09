@@ -137,3 +137,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login/'
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # デフォルト設定
+SESSION_COOKIE_SECURE = False  # HTTPSを使用していない場合はFalse
+

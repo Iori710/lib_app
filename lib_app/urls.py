@@ -50,4 +50,10 @@ urlpatterns = [
     path('reserving/<int:ISBN>/', views.BookReserving, name='reserving'),
 
     path('reserved/<int:ISBN>/', views.BookReserved, name='reserved'),
+    
+    path('check/',views.Check, name='check'),
+    
+    path('lending/', views.BookLending, name='lending'),
+    
+    path('returned/', views.BookReturned, name='returned'),
 ]

@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django import forms
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required 
 from django.db.models import Q, Avg
@@ -10,37 +9,10 @@ from operator import and_
 from .models import Book, Library, Review, Reserve, Lending
 import urllib.request
 import xml.etree.ElementTree as ET
-import bootstrap_datepicker_plus.widgets as datetimepicker
 import json
 import time
 from django.urls import reverse
-import logging
-
-logger = logging.getLogger(__name__)
-
-class LibForm(forms.ModelForm):#なぜかforms.pyを作成・インポートしても反応しないのでここに作る
-    class Meta:
-        model = Library
-        fields = ['ISBN']
-        
-class BookRegisterForm(forms.ModelForm):
-    class Meta:
-        model = Book
-        fields = ['shelf', 'c_code']
-        
-class BookSearchForm(forms.ModelForm):
-    class Meta:
-        model = Book
-        fields = ['title', 'writer', 'publisher']
-        
-class ReserveForm(forms.ModelForm):
-    class Meta:
-        model = Reserve
-        fields = ['lending_start', 'lending_end']
-
-class CalendarForm(forms.Form):
-    start_date = forms.IntegerField(required=True)
-    end_date = forms.IntegerField(required=True)
+from .forms import LibForm, BookRegisterForm, BookSearchForm, CalendarForm, ReserveForm, ReviewForm
 
 # Create your views here.
 def Register(request):
@@ -102,8 +74,7 @@ def Register(request):
                         )
     
     else:    
-        return render(request,'lib_app/register.html',{ 'form1':form1, 'form2':form2 })
-        
+        return render(request,'lib_app/register.html',{ 'form1':form1, 'form2':form2 })        
 
 @login_required#ログインしていない場合ログイン画面に遷移する
 def Top(request):#内容は仮
@@ -281,11 +252,11 @@ def Check(request):
                 request.session['lending_book_id'] = lending_book.id
                 return redirect(reverse('lending'))
             except:
-                logger.debug("No reserve found.")
                 return render(request, 'lib_app/check.html', {'message': '正しく入力されていない、もしくは貸出日になっていません'})
     else:
         return render(request, 'lib_app/check.html')
 
+@login_required
 def BookReturned(request):
     id_ = request.session.get('returned_book_id')
     returned_book = get_object_or_404(Lending, id__exact=id_)
@@ -311,6 +282,7 @@ def BookReturned(request):
             'returned_book':returned_book, 'ISBN':isbn, 'title':title, 'writer':writer
         })
 
+@login_required
 def BookLending(request):
     id_ = request.session.get('lending_book_id')
     lending_book = get_object_or_404(Reserve, id__exact=id_)
@@ -323,6 +295,7 @@ def BookLending(request):
             returned = False
         )   
         lend_book.save()
+        lending_book.delete() #予約データ削除
         
         isbn = lending_book.book_id.ISBN
         title = lending_book.book_id.title
@@ -330,7 +303,9 @@ def BookLending(request):
         #セッションからデータ削除
         del request.session['lending_book_id']
         
-        return render(request, 'lib_app/lending.html', {'lending_book':lending_book})  
+        return render(request, 'lib_app/lending.html', {
+            'lending_book':lending_book, 'ISBN':isbn, 'title':title, 'writer':writer
+            })  
     else:
         isbn = lending_book.book_id.ISBN
         title = lending_book.book_id.title
@@ -338,6 +313,33 @@ def BookLending(request):
         return render(request, 'lib_app/lending_check.html', {
             'lending_book':lending_book, 'ISBN':isbn, 'title':title, 'writer':writer
         })
+
+@login_required
+def Reviewing(request,ISBN):
+    title = Book.objects.filter(ISBN__exact=ISBN).first().title
+    if request.method == 'POST':
+        reviews = Review(
+            user_id = request.user,
+            ISBN = Library.objects.get(ISBN__exact=ISBN),
+            stars = request.POST['stars'],
+            review = request.POST['review']
+        )
+        reviews.save()
+        
+        return render(request, 'lib_app/reviewing_ty.html',{'ISBN':ISBN, 'title':title})
+    else:
+        form = ReviewForm()
+        return render(request, 'lib_app/reviewing.html',{'ISBN':ISBN, 'form':form, 'title':title})
+
+@login_required
+def ReserveView(request):
+    reserve = Reserve.objects.filter(user_id__exact=request.user, lending_start__gte = datetime.now()).order_by('-id')
+    return render(request, 'lib_app/reserve_view.html',{'reserve':reserve})
+
+@login_required
+def LendingView(request):
+    lending = Lending.objects.filter(user_id__exact=request.user).exclude(returned=True)
+    return render(request, 'lib_app/lending_view.html',{'lending':lending})
 
 def Logout(request):
     logout(request)

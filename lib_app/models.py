@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 
@@ -25,11 +25,11 @@ class Book(models.Model):
 class Review(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     ISBN = models.ForeignKey(Library, on_delete=models.CASCADE)
-    stars = models.IntegerField(default=0)
+    stars = models.IntegerField('評価(5段階)', default=1,validators=[MinValueValidator(1), MaxValueValidator(5)])
     review = models.TextField(blank=True, null=True)
     
     def __str__(self):
-        return self.review
+        return self.user_id
     
 class Reserve(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)

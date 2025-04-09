@@ -27,17 +27,15 @@ urlpatterns = [
         ),
          name='login'),
     
-    path('top/', views.Top, name='top'),
-    
     path('logout/', views.Logout, name='logout'),
+    
+    path('debug/', views.Debug, name='debug'),
     
     path('register/', views.Register, name='register'),
     
+    path('top/', views.Top, name='top'),
+    
     path('search/', views.Search, name='search'),
-    
-    path('mypage/', views.Mypage, name='mypage'),
-    
-    path('debug/', views.Debug, name='debug'),
     
     path('detail/<int:ISBN>/', views.Detail, name='detail'),
     
@@ -56,4 +54,12 @@ urlpatterns = [
     path('lending/', views.BookLending, name='lending'),
     
     path('returned/', views.BookReturned, name='returned'),
+    
+    path('reviewing/<int:ISBN>/', views.Reviewing, name='reviewing'),
+    
+    path('mypage/', views.Mypage, name='mypage'),
+    
+    path('view/reserve/', views.ReserveView, name='reserve_view'),
+    
+    path('view/lending/', views.LendingView, name='lending_view')
 ]

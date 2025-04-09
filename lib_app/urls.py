@@ -61,5 +61,9 @@ urlpatterns = [
     
     path('view/reserve/', views.ReserveView, name='reserve_view'),
     
-    path('view/lending/', views.LendingView, name='lending_view')
+    path('view/lending/', views.LendingView, name='lending_view'),
+    
+    path('option/', views.UserOption, name='option'),
+    
+    path('option/username/', views.UserNameChange, name='username'),
 ]

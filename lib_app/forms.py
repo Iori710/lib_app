@@ -1,5 +1,6 @@
 from django import forms
 from .models import Library, Book, Review, Reserve
+from django.contrib.auth.models import User
 
 class LibForm(forms.ModelForm):
     class Meta:
@@ -29,3 +30,14 @@ class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
         fields = ['stars', 'review']
+        
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '新しいユーザーネーム'}),
+        }
+        labels = {
+            'username': '新しいユーザーネーム',
+        }

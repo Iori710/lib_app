@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 import json
 import time
 from django.urls import reverse
-from .forms import LibForm, BookRegisterForm, BookSearchForm, CalendarForm, ReserveForm, ReviewForm
+from .forms import LibForm, BookRegisterForm, BookSearchForm, CalendarForm, ReserveForm, ReviewForm, UserForm
 
 # Create your views here.
 def Register(request):
@@ -333,13 +333,34 @@ def Reviewing(request,ISBN):
 
 @login_required
 def ReserveView(request):
-    reserve = Reserve.objects.filter(user_id__exact=request.user, lending_start__gte = datetime.now()).order_by('-id')
+    lending =Lending.objects.all().values('id')
+    reserve = Reserve.objects.filter(user_id__exact=request.user, lending_start__gte = datetime.now()).exclude(id__in=lending)
+    if reserve.count() == 0:
+        return render(request, 'lib_app/reserve_view.html',{'message':'予約している書籍はありません'})
     return render(request, 'lib_app/reserve_view.html',{'reserve':reserve})
 
 @login_required
 def LendingView(request):
     lending = Lending.objects.filter(user_id__exact=request.user).exclude(returned=True)
+    if lending.count() == 0:
+        return render(request, 'lib_app/lending_view.html',{'message':'貸出している書籍はありません'})
     return render(request, 'lib_app/lending_view.html',{'lending':lending})
+
+@login_required
+def UserOption(request):
+    return render(request, 'lib_app/user_option.html')
+
+@login_required
+def UserNameChange(request):
+        user = request.user
+        if request.method == 'POST':
+            form = UserForm(request.POST, instance=user)
+            if form.is_valid():
+                form.save()
+                return render(request, 'lib_app/username.html', {'form':form, 'message':'ユーザーネームを変更しました'})
+        else:
+            form = UserForm(instance=user)
+            return render(request, 'lib_app/username.html', {'form':form})
 
 def Logout(request):
     logout(request)

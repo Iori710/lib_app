@@ -1,5 +1,5 @@
 from django import forms
-from .models import Library, Book, Review, Reserve
+from .models import Library, Book, Review, Reserve, Contact
 from django.contrib.auth.models import User
 
 class LibForm(forms.ModelForm):
@@ -11,11 +11,6 @@ class BookRegisterForm(forms.ModelForm):
     class Meta:
         model = Book
         fields = ['shelf', 'c_code']
-        
-class BookSearchForm(forms.ModelForm):
-    class Meta:
-        model = Book
-        fields = ['title', 'writer', 'publisher']
         
 class ReserveForm(forms.ModelForm):
     class Meta:
@@ -41,3 +36,9 @@ class UserForm(forms.ModelForm):
         labels = {
             'username': '新しいユーザーネーム',
         }
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = ['message']
+        

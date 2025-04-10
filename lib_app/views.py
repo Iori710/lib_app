@@ -1,18 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required 
+from django.contrib.auth import logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm 
 from django.db.models import Q, Avg
 from django.http import Http404, HttpResponse, JsonResponse
-from datetime import timedelta, datetime  # 必要に応じてインポート
+from datetime import timedelta, datetime
 from functools import reduce
 from operator import and_
-from .models import Book, Library, Review, Reserve, Lending
+from .models import Book, Library, Review, Reserve, Lending, News, Contact
 import urllib.request
 import xml.etree.ElementTree as ET
 import json
 import time
 from django.urls import reverse
-from .forms import LibForm, BookRegisterForm, BookSearchForm, CalendarForm, ReserveForm, ReviewForm, UserForm
+from .forms import LibForm, BookRegisterForm, CalendarForm, ReserveForm, ReviewForm, UserForm, ContactForm
 
 # Create your views here.
 def Register(request):
@@ -68,6 +69,7 @@ def Register(request):
         return render(request, 'lib_app/register.html',
                        {
                             'message':'登録しました',
+                            'book':book,
                             'form1':form1,
                             'form2':form2
                         }
@@ -77,16 +79,67 @@ def Register(request):
         return render(request,'lib_app/register.html',{ 'form1':form1, 'form2':form2 })        
 
 @login_required#ログインしていない場合ログイン画面に遷移する
-def Top(request):#内容は仮
+def Top(request):
     user = request.user
-    form1 = BookSearchForm()
-    form2 = LibForm()
-    return render(request, 'lib_app/top.html', { 'user':user, 'form1':form1, 'form2':form2 })
+    news = News.objects.all().order_by('-id')[:3] #最新ニュース3件のみ表示
+    
+    lending = Lending.objects.all()
+    message1 = ''
+    message2 = ''
+    if Reserve.objects.filter(
+        user_id__exact=user, 
+        lending_start__lte=datetime.now()
+    ).exclude(id__in=lending.values('id')).exists(): #貸出可能な書籍がある場合
+        message1 = '貸出できる書籍があります'
+    
+    if lending.filter(
+        user_id__exact=user,
+        lending_end__exact=datetime.now() + timedelta(days=1), 
+        returned=False
+    ).exists(): #返却日が明日の書籍がある場合
+        message2 = '明日が返却日の書籍があります'
+    elif lending.filter(
+        user_id__exact=user,
+        lending_end__exact=datetime.now(), 
+        returned=False
+    ).exists(): #返却日が今日の書籍がある場合
+        message2 = '本日が返却日の書籍があります'
+    elif lending.filter(
+        user_id__exact=user,
+        lending_end__lte=datetime.now(), 
+        returned=False
+    ).exists(): #返却日が過ぎている書籍がある場合
+        message2 = '返却日が過ぎている書籍があります 速やかに返却してください'
+    
+    return render(request, 'lib_app/top.html', { 'user':user, 'news':news, 'message1':message1, 'message2':message2 })
+
+@login_required
+def NewsList(request):
+    news = News.objects.all().order_by('-id') #全ニュースを取得
+    return render(request, 'lib_app/news_list.html', { 'news':news })
+
+@login_required
+def NewsPage(request, id):
+    news = News.objects.get(id__exact=id)
+    return render(request, 'lib_app/news.html', { 'news':news })
 
 @login_required
 def Mypage(request):
     user = request.user
     return render(request,'lib_app/mypage.html', { 'user':user })
+
+@login_required
+def ContactForms(request):
+    form = ContactForm()
+    if request.method == 'POST':
+        contact = Contact(
+            user_id = request.user,
+            message = request.POST['message']
+        )
+        contact.save()
+        return render(request, 'lib_app/contact.html', {'form':form, 'message':'お問い合わせ内容を送信しました'})
+    else:
+        return render(request, 'lib_app/contact.html', {'form': form})
 
 @login_required
 def Search(request):
@@ -170,7 +223,7 @@ def BookCalendar(request,ISBN):
     return JsonResponse(events, safe=False)
     
 @login_required
-def BookReserving(request, ISBN):  # 予約登録用
+def BookReserving(request, ISBN):
     if request.method == 'GET':
         raise Http404()
 
@@ -333,7 +386,7 @@ def Reviewing(request,ISBN):
 
 @login_required
 def ReserveView(request):
-    lending =Lending.objects.all().values('id')
+    lending = Lending.objects.all().values('id')
     reserve = Reserve.objects.filter(user_id__exact=request.user, lending_start__gte = datetime.now()).exclude(id__in=lending)
     if reserve.count() == 0:
         return render(request, 'lib_app/reserve_view.html',{'message':'予約している書籍はありません'})
@@ -354,42 +407,37 @@ def UserOption(request):
 def UserNameChange(request):
         user = request.user
         if request.method == 'POST':
-            form = UserForm(request.POST, instance=user)
-            if form.is_valid():
-                form.save()
-                return render(request, 'lib_app/username.html', {'form':form, 'message':'ユーザーネームを変更しました'})
+            try:
+                form = UserForm(request.POST, instance=user)
+                if form.is_valid():
+                    form.save()
+                    return render(request, 'lib_app/username.html', {'form':form, 'message':'ユーザーネームを変更しました'})
+            except:
+                return render(request, 'lib_app/username.html', {'form':form, 'message':'エラーが発生しました'})
         else:
             form = UserForm(instance=user)
             return render(request, 'lib_app/username.html', {'form':form})
+
+@login_required
+def PasswordChange(request):
+    if request.method == 'POST':
+        try:
+            form = PasswordChangeForm(user=request.user, data=request.POST)
+            if form.is_valid():
+                    form.save()
+                    update_session_auth_hash(request, form.user)  # セッションの更新
+                    return render(request, 'lib_app/password.html', {'form':form, 'message':'パスワードを変更しました'})
+        except:
+            return render(request, 'lib_app/password.html', {'form':form, 'message':'エラーが発生しました'})
+    else:
+        form = PasswordChangeForm(user=request.user)
+        return render(request, 'lib_app/password.html', {'form':form})
 
 def Logout(request):
     logout(request)
     return redirect(reverse('login'))
 
 def Debug(request): #デバッグ用 完成したら消す
-    if request.method == 'POST':
-        c_code = request.POST['keyword']
-        try:
-            returned_book = Lending.objects.get(
-                book_id__c_code__exact = c_code, returned = False
-            )
-            
-            #セッションにデータ保存
-            request.session['returned_book_id'] = returned_book.id
-            return render(request, 'lib_app/debug.html', {'message':'返却', 'c_code':c_code, 'returned_book':returned_book})
-        except:
-            try:
-                lending_book = Reserve.objects.filter(
-                    book_id__c_code__exact = c_code, 
-                    user_id__exact=request.user,
-                    lending_start__lte = datetime.now()
-                ).exclude(lending_end__lt = datetime.now()).first()
-                
-                #セッションにデータ保存
-                request.session['lending_book_id'] = lending_book.id
-                return render(request, 'lib_app/debug.html', {'message':'貸出', 'c_code':c_code, 'lending_book':lending_book})
-            except:
-                return render(request, 'lib_app/debug.html', {'message':'error'})
-    else:
-        return render(request, 'lib_app/debug.html')
+    news = News.objects.all()
+    return render(request, 'lib_app/debug.html', {'news':news})
 

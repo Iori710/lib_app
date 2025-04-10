@@ -35,6 +35,10 @@ urlpatterns = [
     
     path('top/', views.Top, name='top'),
     
+    path('news/', views.NewsList, name='news_list'),
+    
+    path('news/<int:id>', views.NewsPage, name='news'),
+    
     path('search/', views.Search, name='search'),
     
     path('detail/<int:ISBN>/', views.Detail, name='detail'),
@@ -66,4 +70,8 @@ urlpatterns = [
     path('option/', views.UserOption, name='option'),
     
     path('option/username/', views.UserNameChange, name='username'),
+    
+    path('option/password/', views.PasswordChange, name='password'),
+    
+    path('contact/', views.ContactForms, name='contact'),
 ]

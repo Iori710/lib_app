@@ -40,5 +40,19 @@ class Reserve(models.Model):
 class Lending(Reserve):
     returned = models.BooleanField(default=False)
     
+class News(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    created_at = models.DateField(auto_now_add=True)
     
+    def __str__(self):
+        return self.title
     
+class Contact(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField("問い合わせ内容")
+    created_at = models.DateField(auto_now_add=True)
+    
+    def __str__(self):
+        return str(self.user_id) + "のメッセージ " + str(self.created_at)
+       

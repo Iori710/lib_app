@@ -21,10 +21,16 @@ class CalendarForm(forms.Form):
     start_date = forms.IntegerField(required=True)
     end_date = forms.IntegerField(required=True)
     
-class ReviewForm(forms.ModelForm):
-    class Meta:
-        model = Review
-        fields = ['stars', 'review']
+class ReviewForm(forms.Form):
+    STAR_CHOICES = [
+        (1, '★'),
+        (2, '★★'),
+        (3, '★★★'),
+        (4, '★★★★'),
+        (5, '★★★★★'),
+    ]
+    stars = forms.ChoiceField(choices=STAR_CHOICES, widget=forms.Select, label="評価(5段階)")
+    review = forms.CharField(widget=forms.Textarea, label="レビュー")
         
 class UserForm(forms.ModelForm):
     class Meta:
@@ -41,4 +47,3 @@ class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
         fields = ['message']
-        

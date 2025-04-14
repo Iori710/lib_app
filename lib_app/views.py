@@ -155,6 +155,9 @@ def Search(request):
                     pass
                 else:
                     q_list += i
+        
+        else:
+            return redirect('/top/')
                 
         query = reduce(
             and_,[
@@ -164,6 +167,7 @@ def Search(request):
             )        
         result = Book.objects.filter(query).order_by('title').distinct('title')
         return render(request, 'lib_app/search.html', { 'result':result, 'keyword':keyword })
+        
     else:    
         return redirect('/top/')
 
@@ -209,7 +213,7 @@ def BookCalendar(request,ISBN):
         book_id__ISBN__exact = ISBN,
         lending_start__lte = formatted_end_date,
         lending_end__gte = formatted_start_date
-    )
+    ).exclude(id__in=Lending.objects.filter(returned=True).values('book_id')) #貸出中の書籍は除外
 
     # 予約情報をJSON形式に変換
     events = []
@@ -317,6 +321,7 @@ def BookReturned(request):
         returned_book.returned = True
         returned_book.save()
         
+        Reserve.objects.get(id__exact=id_).delete() #予約データ削除
         
         isbn = returned_book.book_id.ISBN
         title = returned_book.book_id.title
@@ -350,14 +355,14 @@ def BookLending(request):
         lend_book.save()
         lending_book.delete() #予約データ削除
         
-        isbn = lending_book.book_id.ISBN
-        title = lending_book.book_id.title
-        writer = lending_book.book_id.writer
+        isbn = lend_book.book_id.ISBN
+        title = lend_book.book_id.title
+        writer = lend_book.book_id.writer
         #セッションからデータ削除
         del request.session['lending_book_id']
         
         return render(request, 'lib_app/lending.html', {
-            'lending_book':lending_book, 'ISBN':isbn, 'title':title, 'writer':writer
+            'lending_book':lend_book, 'ISBN':isbn, 'title':title, 'writer':writer
             })  
     else:
         isbn = lending_book.book_id.ISBN
@@ -440,4 +445,3 @@ def Logout(request):
 def Debug(request): #デバッグ用 完成したら消す
     news = News.objects.all()
     return render(request, 'lib_app/debug.html', {'news':news})
-

@@ -29,7 +29,7 @@ class Review(models.Model):
     review = models.TextField(blank=True, null=True)
     
     def __str__(self):
-        return self.user_id
+        return str(self.user_id)
     
 class Reserve(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)

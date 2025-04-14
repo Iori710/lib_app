@@ -12,7 +12,7 @@
     <form action ={% url "username" %} method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type:"submit">変更</button>
+        <button class="btn btn-primary" type:"submit">変更</button>
     </form>
     {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
     <a href='{% url "option" %}'>戻る</a><br>

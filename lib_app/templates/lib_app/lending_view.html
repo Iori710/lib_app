@@ -1,23 +1,16 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>予約書籍確認（仮）</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
-    crossorigin="anonymous">
-</head>
-<body>
-    <h3>貸出書籍確認</h3><hr>
+{% extends "lib_app/base.html" %}
+{% block title %}予約書籍確認{% endblock %}
+{% block content %}
+<h3>貸出書籍確認</h3><hr>
     {% if lending %}
-    <table>
+    <table class="table table-bordered table-striped">
         <thead>
             <tr>
-                <th>書籍名</th>
-                <th>著者</th>
-                <th>出版社</th>
-                <th>返却場所</th>
-                <th>返却日</th>
+                <th scope="col">書籍名</th>
+                <th scope="col">著者</th>
+                <th scope="col">出版社</th>
+                <th scope="col">返却場所</th>
+                <th scope="col">返却日</th>
             </tr>
         </thead>
         <tbody>
@@ -37,8 +30,4 @@
     {% endif %}
     <a href="{% url "check" %}">返却はこちら</a><br>
     <a href={% url "mypage" %}>マイページに戻る</a>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
-    rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" 
-    crossorigin="anonymous">
-</body>
-</html>
+{% endblock content %}

@@ -18,6 +18,6 @@
     <h3>評価：{{ i.stars|stars }}</h3>
     <a>{{ i.review }}</a>
 {% endfor %}
-<hr><br><a href="{{ request.META.HTTP_REFERER }}">戻る</a>
+<hr><br><a href="{% url "detail" ISBN %}">書籍情報に戻る</a>
 
 {% endblock content %}

@@ -30,7 +30,7 @@ class ReviewForm(forms.Form):
         (5, '★★★★★'),
     ]
     stars = forms.ChoiceField(choices=STAR_CHOICES, widget=forms.Select, label="評価(5段階)")
-    review = forms.CharField(widget=forms.Textarea, label="レビュー")
+    review = forms.CharField(widget=forms.Textarea, label="レビュー", required=False)
         
 class UserForm(forms.ModelForm):
     class Meta:

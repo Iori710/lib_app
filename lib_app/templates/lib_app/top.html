@@ -3,8 +3,8 @@
 {% block content %}
     <a><strong>ようこそ、{{ user }}さん</strong></a> <a href= {% url "mypage" %}>マイページ</a><br>
     <form action ={% url "search" %} method="get"> <!--プロジェクトフォルダ"search"にデータが飛ぶはず-->
-        <input type="text" name="keyword" placeholder="書籍検索">
-        <button type="submit">検索</button>
+        <input class="form-control me-2" type="search" name="keyword" placeholder="書籍検索" style="width: 200px; display: inline-block;">
+        <button class="btn btn-secondary" type="submit">検索</button>
     </form>
     <div class="col-2 text-bg-info">
         {% if message1 %}<p><strong>{{ message1 }} <a href="{% url "reserve_view" %}" class="info">確認</a></strong></p>{% endif %}

@@ -2,7 +2,7 @@
 {% block title %}検索結果{% endblock %}
 {% block content %}
 <h2>「{{keyword}}」の検索結果</h2>
-<form action ={% url "search" %} method="get"> <!--プロジェクトファイル"search"にデータが飛ぶはず-->
+<form action ={% url "search" %} method="get">
     <input class="form-control me-2" type="search" name="keyword" value={{keyword}} style="width: 200px; display: inline-block;">
         <button class="btn btn-secondary" type="submit">検索</button>
 </form>
@@ -14,8 +14,8 @@
         <!-- 画像を左側に配置 -->
         <div class="me-3">
             <img src="https://ndlsearch.ndl.go.jp/thumbnail/{{i.ISBN}}.jpg" 
-                 onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNSA4LjVjMC0uODI4LjY3Mi0xLjUgMS41LTEuNXMxLjUuNjcyIDEuNSAxLjVjMCAuODI5LS42NzIgMS41LTEuNSAxLjVzLTEuNS0uNjcxLTEuNS0xLjV6bTkgLjVsLTIuNTE5IDQtMi40ODEtMS45Ni00IDUuOTZoMTRsLTUtOHptOC00djE0aC0yMHYtMTRoMjB6bTItMmgtMjR2MThoMjR2LTE4eiIvPjwvc3ZnPg==';" 
-                 class="img-fluid" style="width: 120px; height: auto;" />
+                onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNSA4LjVjMC0uODI4LjY3Mi0xLjUgMS41LTEuNXMxLjUuNjcyIDEuNSAxLjVjMCAuODI5LS42NzIgMS41LTEuNSAxLjVzLTEuNS0uNjcxLTEuNS0xLjV6bTkgLjVsLTIuNTE5IDQtMi40ODEtMS45Ni00IDUuOTZoMTRsLTUtOHptOC00djE0aC0yMHYtMTRoMjB6bTItMmgtMjR2MThoMjR2LTE4eiIvPjwvc3ZnPg==';" 
+                class="img-fluid" style="width: 120px; height: auto;" />
         </div>
         <!-- 情報を画像の中央に揃える -->
         <div>

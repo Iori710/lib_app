@@ -1,5 +1,5 @@
 {% extends "lib_app/base.html" %}
-{% block title %}{% endblock %}
+{% block title %}トップページ{% endblock %}
 {% block content %}
     <a><strong>ようこそ、{{ user }}さん</strong></a> <a href= {% url "mypage" %}>マイページ</a><br>
     <form action ={% url "search" %} method="get"> <!--プロジェクトフォルダ"search"にデータが飛ぶはず-->

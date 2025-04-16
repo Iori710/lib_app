@@ -4,16 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm 
 from django.db.models import Q, Avg
 from django.http import Http404, HttpResponse, JsonResponse
+from django.urls import reverse
 from datetime import timedelta, datetime
 from functools import reduce
 from operator import and_
-from .models import Book, Library, Review, Reserve, Lending, News, Contact
+from .models import *
 import urllib.request
 import xml.etree.ElementTree as ET
 import json
 import time
-from django.urls import reverse
-from .forms import LibForm, BookRegisterForm, CalendarForm, ReserveForm, ReviewForm, UserForm, ContactForm
+from .forms import *
 
 # Create your views here.
 def Register(request):
@@ -173,20 +173,20 @@ def Search(request):
 
 @login_required    
 def Detail(request,ISBN):
-    info = Book.objects.filter(ISBN__exact=ISBN)[0]
+    info = Book.objects.filter(ISBN__exact=ISBN).first()
     review = Review.objects.filter(ISBN__exact=ISBN).order_by('-id')[:3] #最新レビュー3件のみ表示
     return render(request, 'lib_app/detail.html', {'ISBN':ISBN, 'info':info, 'review':review})
 
 @login_required
 def BookReview(request,ISBN):
-    title = Book.objects.filter(ISBN__exact=ISBN)[0].title
+    title = Book.objects.filter(ISBN__exact=ISBN).first().title
     review = Review.objects.filter(ISBN__exact=ISBN).order_by('-id')
     average = review.aggregate(Avg('stars')).get('stars__avg')
     return render(request, 'lib_app/review.html', {'title':title, 'review':review, 'average':average, 'ISBN':ISBN})
 
 @login_required
 def BookReserve(request,ISBN):
-    info = Book.objects.filter(ISBN__exact=ISBN)[0]
+    info = Book.objects.filter(ISBN__exact=ISBN).first()
     return render(request, 'lib_app/reserve.html', {'ISBN':ISBN, 'info':info})
 
 def BookCalendar(request,ISBN):
@@ -282,7 +282,7 @@ def BookReserving(request, ISBN):
 
 @login_required
 def BookReserved(request,ISBN):
-    info = Reserve.objects.filter(user_id__exact=request.user).order_by('-id')[0] #最新予約を取得
+    info = Reserve.objects.filter(user_id__exact=request.user).order_by('-id').first() #最新予約を取得
     book = info.book_id
     return render(request, 'lib_app/reserved.html', {'ISBN':ISBN, 'info':info, 'book':book})
 

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Library, Book, Review, Reserve, Contact
+from .models import *
 from django.contrib.auth.models import User
 
 class LibForm(forms.ModelForm):

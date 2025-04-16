@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib.auth.views import LoginView
 from django.urls import path
-from . import views
+from .views import *
 
 urlpatterns = [
     path('login/',
@@ -27,51 +27,51 @@ urlpatterns = [
         ),
          name='login'),
     
-    path('logout/', views.Logout, name='logout'),
+    path('logout/', Logout, name='logout'),
     
-    path('debug/', views.Debug, name='debug'),
+    path('debug/', Debug, name='debug'),
     
-    path('register/', views.Register, name='register'),
+    path('register/', Register, name='register'),
     
-    path('top/', views.Top, name='top'),
+    path('top/', Top, name='top'),
     
-    path('news/', views.NewsList, name='news_list'),
+    path('news/', NewsList, name='news_list'),
     
-    path('news/<int:id>', views.NewsPage, name='news'),
+    path('news/<int:id>', NewsPage, name='news'),
     
-    path('search/', views.Search, name='search'),
+    path('search/', Search, name='search'),
     
-    path('detail/<int:ISBN>/', views.Detail, name='detail'),
+    path('detail/<int:ISBN>/', Detail, name='detail'),
     
-    path('review/<int:ISBN>/', views.BookReview, name='review'),
+    path('review/<int:ISBN>/', BookReview, name='review'),
     
-    path('calendar/<int:ISBN>/', views.BookCalendar, name='calendar'),
+    path('calendar/<int:ISBN>/', BookCalendar, name='calendar'),
     
-    path('reserve/<int:ISBN>/', views.BookReserve, name='reserve'),
+    path('reserve/<int:ISBN>/', BookReserve, name='reserve'),
     
-    path('reserving/<int:ISBN>/', views.BookReserving, name='reserving'),
+    path('reserving/<int:ISBN>/', BookReserving, name='reserving'),
 
-    path('reserved/<int:ISBN>/', views.BookReserved, name='reserved'),
+    path('reserved/<int:ISBN>/', BookReserved, name='reserved'),
     
-    path('check/',views.Check, name='check'),
+    path('check/',Check, name='check'),
     
-    path('lending/', views.BookLending, name='lending'),
+    path('lending/', BookLending, name='lending'),
     
-    path('returned/', views.BookReturned, name='returned'),
+    path('returned/', BookReturned, name='returned'),
     
-    path('reviewing/<int:ISBN>/', views.Reviewing, name='reviewing'),
+    path('reviewing/<int:ISBN>/', Reviewing, name='reviewing'),
     
-    path('mypage/', views.Mypage, name='mypage'),
+    path('mypage/', Mypage, name='mypage'),
     
-    path('view/reserve/', views.ReserveView, name='reserve_view'),
+    path('view/reserve/', ReserveView, name='reserve_view'),
     
-    path('view/lending/', views.LendingView, name='lending_view'),
+    path('view/lending/', LendingView, name='lending_view'),
     
-    path('option/', views.UserOption, name='option'),
+    path('option/', UserOption, name='option'),
     
-    path('option/username/', views.UserNameChange, name='username'),
+    path('option/username/', UserNameChange, name='username'),
     
-    path('option/password/', views.PasswordChange, name='password'),
+    path('option/password/', PasswordChange, name='password'),
     
-    path('contact/', views.ContactForms, name='contact'),
+    path('contact/', ContactForms, name='contact'),
 ]

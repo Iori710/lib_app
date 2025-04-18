@@ -1,7 +1,3 @@
-.info {
-    color: brown;
-}
-
-.danger {
-    color: white;
+.form-text ul {
+    list-style-type: none;
 }

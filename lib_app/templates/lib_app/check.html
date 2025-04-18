@@ -1,13 +1,15 @@
 {% extends "lib_app/base.html" %}
 {% block title %}貸出・返却画面{% endblock %}
 {% block content %}
-<h3>貸出・返却画面</h3>
-<a>貸出・返却を行う書籍の<strong>裏表紙2段目バーコードの数字</strong>を入力してください</a>
-<form method="post" action ={% url "check" %}>
-    {% csrf_token %}
-    <input type="text" name="keyword" placeholder="数字を入力">
-    <button type="submit">確認</button>
-</form>
-{% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
-<a href="{% url "top" %}">トップページに戻る</a>
+<div class="text-center">
+    <h3 class="mt-2">貸出・返却画面</h3>
+    <a>貸出・返却を行う書籍の<strong>裏表紙2段目バーコードの数字</strong>を入力してください</a>
+    <form method="post" action ={% url "check" %} class="m-2">
+        {% csrf_token %}
+        <input class="form-control me-2" type="search" name="keyword" placeholder="数字を入力" style="width: 200px; display: inline-block;">
+        <button class="btn btn-secondary" type="submit">確認</button>
+    </form>
+    {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
+    <a href="{% url "top" %}" class="m-2">トップページに戻る</a>
+</div>
 {% endblock content %}

@@ -1,10 +1,17 @@
 {% extends "lib_app/base.html" %}
 {% block title %}ユーザー設定{% endblock %}
 {% block content %}
-<h3>ユーザー設定</h3>
-<ul>
-    <li><a href='{% url "username" %}'><strong>ユーザーネーム変更</strong></a></li>
-    <li><a href='{% url "password" %}'><strong>パスワード変更</strong></a></li>
-</ul>
-<a href={% url "mypage" %}>マイページに戻る</a>
+<div class="text-center">
+    <h3>ユーザー設定</h3>
+    <div class="container">
+        <div class="row">
+            <div class="col"></div>
+            <ul class="list-group text-center" style="width: 480px;">
+                <a href='{% url "username" %}' class="list-group-item list-group-item-action"><strong>ユーザーネーム変更</strong></a>
+                <a href='{% url "password" %}' class="list-group-item list-group-item-action"><strong>パスワード変更</strong></a>            </ul>
+            <div class="col"></div>
+        </div>
+    </div>
+    <a href={% url "mypage" %}>マイページに戻る</a>
+</div>
 {% endblock content %}

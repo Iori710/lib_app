@@ -9,21 +9,25 @@
     crossorigin="anonymous">
 </head>
 <body>
-    <h1 class="text-center">図書館サービスログイン</h1>
-    <form method="post" class="row g-3 text-center">
-        {% csrf_token %}
-        <div class="col-12">
-            <label for="username" class="form-label font-monospace">ユーザー名</label>
-            {{ form.username }}
+    <div class="text-center">
+        <h1>図書館サービスログイン</h1>
+        <div class="container">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-12">
+                    <label for="username" class="form-label font-monospace">ユーザー名</label>
+                    {{ form.username }}
+                </div>
+                <div class="col-12">
+                    <label for="password" class="form-label font-monospace">パスワード</label>
+                    {{ form.password }}
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-outline-dark">ログイン</button>
+                </div>
+            </form>
         </div>
-        <div class="col-12">
-            <label for="password" class="form-label font-monospace">パスワード</label>
-            {{ form.password }}
-        </div>
-        <div class="col-12">
-            <button type="submit" class="btn btn-outline-dark">ログイン</button>
-        </div>
-    </form>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" 
     integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" 
     crossorigin="anonymous"></script>

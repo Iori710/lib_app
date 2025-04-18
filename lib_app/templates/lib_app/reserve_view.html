@@ -1,33 +1,41 @@
 {% extends "lib_app/base.html" %}
 {% block title %}予約書籍確認{% endblock %}
 {% block content %}
-<h3>予約書籍確認</h3><hr>
-{% if reserve %}
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th scope="col">書籍名</th>
-            <th scope="col">著者</th>
-            <th scope="col">出版社</th>
-            <th scope="col">保管場所</th>
-            <th scope="col">貸出日</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for i in reserve %}
-        <tr>
-            <td>{{ i.book_id.title }}</td>
-            <td>{{ i.book_id.writer }}</td>
-            <td>{{ i.book_id.publisher }}</td>
-            <td>{{ i.book_id.shelf }}</td>
-            <td>{{ i.lending_start }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% elif message %}
-<p><strong>{{ message }}</strong></p>
-{% endif %}
-<a href="{% url "check" %}">貸出はこちら</a><br>
-<a href={% url "mypage" %}>マイページに戻る</a>
+<div class="text-center">
+    <h3 class="mt-1">予約書籍確認</h3><hr>
+    {% if reserve %}
+    <div class="container">
+        <div class="row">
+            <div class="col"></div>
+            <table class="table table-bordered table-striped" style="width: 1280px;">
+                <thead>
+                    <tr>
+                        <th scope="col">書籍名</th>
+                        <th scope="col">著者</th>
+                        <th scope="col">出版社</th>
+                        <th scope="col">保管場所</th>
+                        <th scope="col">貸出日</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in reserve %}
+                    <tr>
+                        <td>{{ i.book_id.title }}</td>
+                        <td>{{ i.book_id.writer }}</td>
+                        <td>{{ i.book_id.publisher }}</td>
+                        <td>{{ i.book_id.shelf }}</td>
+                        <td>{{ i.lending_start }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="col"></div>
+        </div>
+    </div>
+    {% elif message %}
+    <p><strong>{{ message }}</strong></p>
+    {% endif %}
+    <a href="{% url "check" %}">貸出はこちら</a><br><br>
+    <a href={% url "mypage" %}>マイページに戻る</a>
+</div>
 {% endblock content %}

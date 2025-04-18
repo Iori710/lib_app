@@ -4,20 +4,44 @@
 {% block content %}
 <div class="text-center">
     <h1>「{{title}}」のレビュー</h1>
-    <img src="https://ndlsearch.ndl.go.jp/thumbnail/{{ISBN}}.jpg" onerror="this.onerror=null;this.src=
-    'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGV
-    pZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNSA4LjVjMC0uODI4LjY3Mi0xLjUgMS41LTEuNXMxLjUuN
-    jcyIDEuNSAxLjVjMCAuODI5LS42NzIgMS41LTEuNSAxLjVzLTEuNS0uNjcxLTEuNS0xLjV6bTkgLjVsLTIuNTE5IDQtMi40ODE
-    tMS45Ni00IDUuOTZoMTRsLTUtOHptOC00djE0aC0yMHYtMTRoMjB6bTItMmgtMjR2MThoMjR2LTE4eiIvPjwvc3ZnPg==';" /><br>
-    <button class="btn btn-primary" onclick="location.href='{% url "reserve" ISBN %}'">予約する</button><br>
-    <p><strong>平均評価：★{{average}}</strong></p>
+    <div class="container">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-3 text-center">
+                <img src="https://ndlsearch.ndl.go.jp/thumbnail/{{ISBN}}.jpg" onerror="this.onerror=null;this.src=
+                'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGV
+                pZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNSA4LjVjMC0uODI4LjY3Mi0xLjUgMS41LTEuNXMxLjUuN
+                jcyIDEuNSAxLjVjMCAuODI5LS42NzIgMS41LTEuNSAxLjVzLTEuNS0uNjcxLTEuNS0xLjV6bTkgLjVsLTIuNTE5IDQtMi40ODE
+                tMS45Ni00IDUuOTZoMTRsLTUtOHptOC00djE0aC0yMHYtMTRoMjB6bTItMmgtMjR2MThoMjR2LTE4eiIvPjwvc3ZnPg==';"
+                class="img-thumbnail "/>
+            </div>
+            <div class="row justify-content-center mt-2">
+                <div class="col text-center fs-5">
+                    <p class="lh-1"><strong>平均評価：★{{average|floatformat:1}}</strong></p>
+                    <button class="btn btn-primary mb-3" onclick="location.href='{% url "reserve" ISBN %}'">予約する</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2>レビュー</h2>
+    {% if review.count == 0 %}
+    <a>レビューはありません</a><br>
+    {% else %}
+    {% for i in review %}
+        <hr>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                </div>
+                <div class="col-6 text-start lh-1">
+                    <p class="fs-5"><strong>評価：{{i.stars|stars}}</strong></p>
+                    <p>{{i.review|linebreaksbr}}</p>
+                </div>
+                <div class="col">
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    {% endif %}
+    <hr><br><a href="{% url "detail" ISBN %}">書籍情報に戻る</a>
 </div>
-<h2>レビュー</h2>
-{% for i in review %}
-    <hr>
-    <h3>評価：{{ i.stars|stars }}</h3>
-    <a>{{ i.review }}</a>
-{% endfor %}
-<hr><br><a href="{% url "detail" ISBN %}">書籍情報に戻る</a>
-
 {% endblock content %}

@@ -12,14 +12,15 @@
 </head>
 <body>
     <div class="text-center">
-        <h2>返却しますか？</h2><br>
+        <h2>返却しますか？</h2>
         <form method="post" action="{% url 'returned' %}">
             {% csrf_token %}
             <img src="https://ndlsearch.ndl.go.jp/thumbnail/{{ISBN}}.jpg" onerror="this.onerror=null;this.src=
             'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGV
             pZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNSA4LjVjMC0uODI4LjY3Mi0xLjUgMS41LTEuNXMxLjUuN
             jcyIDEuNSAxLjVjMCAuODI5LS42NzIgMS41LTEuNSAxLjVzLTEuNS0uNjcxLTEuNS0xLjV6bTkgLjVsLTIuNTE5IDQtMi40ODE
-            tMS45Ni00IDUuOTZoMTRsLTUtOHptOC00djE0aC0yMHYtMTRoMjB6bTItMmgtMjR2MThoMjR2LTE4eiIvPjwvc3ZnPg==';" /><br>
+            tMS45Ni00IDUuOTZoMTRsLTUtOHptOC00djE0aC0yMHYtMTRoMjB6bTItMmgtMjR2MThoMjR2LTE4eiIvPjwvc3ZnPg==';" 
+            class="img-thumbnail mb-2"/>
             <h3>タイトル：{{ title }}</h3>
             <h3>著者：{{ writer }}</h3>
             <button class="btn btn-primary" type="submit" formaction="{% url "returned" %}">はい</button>

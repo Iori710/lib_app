@@ -1,10 +1,31 @@
 {% extends "lib_app/base.html" %}
 {% block title %}{{news.title}}{% endblock %}
 {% block content %}
-<h3>{{news.title}}</h3>
-<a>{{news.created_at}}</a>
-<hr>
-<p>{{ news.content }}</p>
-<a href="{% url "top" %}">トップに戻る</a>
-<a href="{% url "news_list" %}">お知らせ一覧</a><br>
+<div class="text-center">
+    <h3>{{news.title}}</h3>
+    <div class="container text-start lh-1">
+        <div class="row">
+            <div class="col">
+            </div>
+            <div class="col-8">
+                <p>{{news.created_at}}</p>
+            </div>
+            <div class="col">
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col">
+            </div>
+            <div class="col-5">
+                <p>{{ news.content|linebreaksbr }}</p>
+            </div>
+            <div class="col">
+            </div>
+        </div>
+    </div>
+    
+    <a href="{% url "news_list" %}">お知らせ一覧</a><br><br>
+    <a href="{% url "top" %}">トップに戻る</a>
+</div>
 {% endblock content %}

@@ -8,16 +8,38 @@
     crossorigin="anonymous">
 </head>
 <body>
-    <h2>ユーザーネーム変更</h2>
-    <form action ={% url "username" %} method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button class="btn btn-primary" type:"submit">変更</button>
-    </form>
-    {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
+    <div class="text-center">
+        <h2 class="m-2">ユーザーネーム変更</h2>
+        <div class="container">
+            <div class="row">
+                <div class="col"></div>
+                <form action ={% url "username" %} method="post" class="text-center" style="width: 480px;">
+                    {% csrf_token %}
+                    <div class="row mb-2">
+                        <div class="col text-end pt-1">
+                        {{ form.username.label_tag }}
+                        </div>
+                        <div class="col text-start">
+                            {{ form.username }}
+                        </div>
+                    </div>
+                    <div class="form-text text-center">
+                        {{ form.username.help_text }}
+                    </div>
+                    
+                    <button class="btn btn-primary" type:"submit">変更</button>
+                </form>
+                <div class="col"></div>
+            </div>
+        </div>
+        {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
     <a href='{% url "option" %}'>戻る</a><br>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
-    rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" 
-    crossorigin="anonymous">
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" 
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" 
+    crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" 
+    integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" 
+    crossorigin="anonymous"></script>
 </body>
 </html>

@@ -443,5 +443,5 @@ def Logout(request):
     return redirect(reverse('login'))
 
 def Debug(request): #デバッグ用 完成したら消す
-    news = News.objects.all()
-    return render(request, 'lib_app/debug.html', {'news':news})
+    help = PasswordChangeForm(user=request.user)
+    return render(request, 'lib_app/debug.html', {'help':help})

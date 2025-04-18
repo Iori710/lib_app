@@ -1,10 +1,23 @@
 {% extends "lib_app/base.html" %}
 {% block title %}お知らせ一覧{% endblock %}
 {% block content %}
-<h1>お知らせ一覧</h1><hr>
-{% for i in news %}
-    <p>{{ i.created_at }}   <a href="{% url "news" i.id %}"><strong>{{ i.title }}</strong></a></p>
+<div class="text-center">
+    <h1>お知らせ一覧</h1><hr>
+    {% for i in news %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+            </div>
+            <div class="col-6 text-start lh-1">
+                <p>{{ i.created_at }}</p>
+                <p><a href="{% url "news" i.id %}"><strong>{{ i.title }}</strong></a></p>
+            </div>
+            <div class="col">
+            </div>
+        </div>
+    </div>
     <hr>
-{% endfor %}
-<a href="{% url "top" %}">トップに戻る</a><br>
+    {% endfor %}
+    <a href="{% url "top" %}">トップに戻る</a><br>
+</div>
 {% endblock content %}

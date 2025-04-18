@@ -6,22 +6,37 @@
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGV
     pZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNSA4LjVjMC0uODI4LjY3Mi0xLjUgMS41LTEuNXMxLjUuN
     jcyIDEuNSAxLjVjMCAuODI5LS42NzIgMS41LTEuNSAxLjVzLTEuNS0uNjcxLTEuNS0xLjV6bTkgLjVsLTIuNTE5IDQtMi40ODE
-    tMS45Ni00IDUuOTZoMTRsLTUtOHptOC00djE0aC0yMHYtMTRoMjB6bTItMmgtMjR2MThoMjR2LTE4eiIvPjwvc3ZnPg==';" /><br>
+    tMS45Ni00IDUuOTZoMTRsLTUtOHptOC00djE0aC0yMHYtMTRoMjB6bTItMmgtMjR2MThoMjR2LTE4eiIvPjwvc3ZnPg==';"
+    class="img-thumbnail m-2" /><br>
+    <h2>「{{title}}」のレビュー</h2>
     <form action={% url "reviewing" ISBN %} method="post">
-        {% csrf_token %}
-            <h2>「{{title}}」のレビュー</h2>
-            <div class="col-12">
-                <label for="stars" class="form-label font-monospace">評価(5段階)</label>
-                {{ form.stars }}
+        <div class="container text-center">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                </div>
+                <div class="col-3 text-start">
+                    <label for="stars" class="col-form-label font-monospace">評価</label><br>
+                    {{ form.stars }}
+                </div>
+                <div class="col">
+                </div>
             </div>
-            <div class="col-12">
-                <label for="review" class="form-label font-monospace ">レビュー</label>
-                {{ form.review }}
+            <div class="row">
+                <div class="col">
+                </div>
+                <div class="col-3 text-start">
+                    <label for="review" class="col-form-label font-monospace">レビュー</label><br>
+                    {{ form.review }}
+                </div>
+                <div class="col">
+                </div>
             </div>
             <div class="col-12">
                 <button class="btn btn-primary" type:"submit">登録</button><td>
             </div>
-        </form>
-        {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
+    </form>
+    {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
+    <br>
 </div>
 {% endblock content %}

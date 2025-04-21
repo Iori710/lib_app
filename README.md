@@ -76,8 +76,8 @@
 ## 設計図など
 以下の設計図は実装前に作られたものであり、一部設計図にない機能が実装されている
 ### ユースケース図
-![](./xml/ユースケース図.drawio.svg)
+![](./svg/ユースケース図.drawio.svg)
 ### 画面遷移図
-![](./xml/画面遷移図.drawio.svg)
+![](./svg/画面遷移図.drawio.svg)
 ### ER図
-![](./xml/ER図.drawio.svg)
+![](./svg/ER図.drawio.svg)

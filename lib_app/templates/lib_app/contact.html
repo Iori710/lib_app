@@ -7,7 +7,7 @@
         {% csrf_token %}
         <label for="message" class="form-label font-monospace">問い合わせ内容</label><br>
         {{ form.message }}<br>
-        <button type="submit" class="btn btn-primary">送信</button>
+        <button type="submit" class="btn btn-primary mb-1">送信</button>
     </form>
     {% if message %}
         <p><strong>{{ message }}</strong></p>

@@ -249,6 +249,10 @@ def BookReserving(request, ISBN):
         adjusted_lending_end = lending_end_date - timedelta(days=1)
         lending_end_date_1 = adjusted_lending_end.strftime("%Y-%m-%d")
         
+        # 貸出日が昨日以前なら予約を拒否
+        if formatted_lending_start < datetime.now():
+            raise Http404
+        
         # 予約期間中の「既に予約されている冊数」を検索
         reserved_books = Reserve.objects.filter(
             book_id__ISBN__exact = ISBN,

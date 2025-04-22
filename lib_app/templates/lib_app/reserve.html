@@ -1,6 +1,6 @@
 {% extends "lib_app/base.html" %}
 {% load static %}
-{% block title %}予約画面（仮）{% endblock %}
+{% block title %}予約画面{% endblock %}
 {% block js %}
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 <meta name="csrf-token" content="{{ csrf_token }}">
@@ -16,7 +16,6 @@
     tMS45Ni00IDUuOTZoMTRsLTUtOHptOC00djE0aC0yMHYtMTRoMjB6bTItMmgtMjR2MThoMjR2LTE4eiIvPjwvc3ZnPg==';"
     class="img-thumbnail mb-1" /><br>
     <div id="calendar" data-isbn="{{ ISBN }}"></div>
-
     <br><a href="{% url "top" %}">トップに戻る</a>
 </div>
 <script src="{% static 'lib_app/app.js' %}"></script>

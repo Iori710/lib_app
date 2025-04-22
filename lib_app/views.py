@@ -445,7 +445,3 @@ def PasswordChange(request):
 def Logout(request):
     logout(request)
     return redirect(reverse('login'))
-
-def Debug(request): #デバッグ用 完成したら消す
-    help = PasswordChangeForm(user=request.user)
-    return render(request, 'lib_app/debug.html', {'help':help})

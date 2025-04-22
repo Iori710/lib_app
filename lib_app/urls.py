@@ -29,8 +29,6 @@ urlpatterns = [
     
     path('logout/', Logout, name='logout'),
     
-    path('debug/', Debug, name='debug'),
-    
     path('register/', Register, name='register'),
     
     path('top/', Top, name='top'),

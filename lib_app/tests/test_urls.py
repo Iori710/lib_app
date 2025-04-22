@@ -11,7 +11,6 @@ class TestUrls(TestCase):
     def test_views(self):
         urls = [
             ('logout', Logout),
-            ('debug', Debug),
             ('register', Register),
             ('top', Top),
             ('news_list', NewsList),

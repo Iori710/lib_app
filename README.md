@@ -11,6 +11,7 @@
 - Django 4.2.19
 - PostgreSQL 17.4
 - Bootstrap 5.3.0
+- FullCalendar 6.1.17
 
 ## 使用方法
 
@@ -75,6 +76,8 @@
 
 ## 参考URL
 [【Django】FullCalendarでスケジュールのDB登録・表示【実践向け】](https://chigusa-web.com/blog/django-fullcalendar/)<br>
+[FullCalendarの使い方](https://qiita.com/imp555sti/items/ee9809768f6dc9439ab5)<br>
+[FullCalendar v6のカスタマイズ：日本語で「日」を消す・多言語対応、デザインの調整方法](https://bloosh.jp/tips/5409/)<br>
 [【Django】サイト内検索機能を組み込んで複数のキーワード入力に対応させる](https://zerofromlight.com/blogs/detail/59/)
 
 ## 設計図など

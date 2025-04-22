@@ -4,6 +4,10 @@ document.addEventListener('DOMContentLoaded', function() {
     axios.defaults.headers.common['X-CSRFToken'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
+        locale: 'ja',
+        dayCellContent: function(arg){
+            return arg.date.getDate();
+        },
 
         // 日付をクリック、または範囲を選択したイベント
         selectable: true,

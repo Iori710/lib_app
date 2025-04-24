@@ -300,6 +300,7 @@ def Check(request):
             returned_book = Lending.objects.get(
                 book_id__c_code__exact = c_code, returned = False
             )
+            #セッションにデータ保存
             request.session['returned_book_id'] = returned_book.id
             return redirect(reverse('returned'))
         except Lending.DoesNotExist:
@@ -325,8 +326,6 @@ def BookReturned(request):
     if request.method =='POST':
         returned_book.returned = True
         returned_book.save()
-        
-        Reserve.objects.get(id__exact=id_).delete() #予約データ削除
         
         isbn = returned_book.book_id.ISBN
         title = returned_book.book_id.title
@@ -434,9 +433,12 @@ def PasswordChange(request):
         try:
             form = PasswordChangeForm(user=request.user, data=request.POST)
             if form.is_valid():
-                    form.save()
-                    update_session_auth_hash(request, form.user)  # セッションの更新
-                    return render(request, 'lib_app/password.html', {'form':form, 'message':'パスワードを変更しました'})
+                form.save()
+                update_session_auth_hash(request, form.user)  # セッションの更新
+                return render(request, 'lib_app/password.html', {'form':form, 'message':'パスワードを変更しました'}) 
+            else:
+                message = form.errors
+                return render(request, 'lib_app/password.html', {'form':form, 'message':form.errors})      
         except:
             return render(request, 'lib_app/password.html', {'form':form, 'message':'エラーが発生しました'})
     else:

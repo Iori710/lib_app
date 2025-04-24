@@ -3,13 +3,13 @@
 {% block content %}
 <div class="text-center">
     <h3 class="mt-2">貸出・返却画面</h3>
-    <a>貸出・返却を行う書籍の<strong>裏表紙2段目バーコードの数字</strong>を入力してください</a>
-    <form method="post" action ={% url "check" %} class="m-2">
-        {% csrf_token %}
-        <input class="form-control me-2" type="search" name="keyword" placeholder="数字を入力" style="width: 200px; display: inline-block;">
-        <button class="btn btn-secondary" type="submit">確認</button>
-    </form>
-    {% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
-    <a href="{% url "top" %}" class="m-2">トップページに戻る</a>
+    <a>貸出・返却を行う書籍の<strong>裏表紙2段目バーコードの数字</strong>を入力してください</a><br>
+        <form method="post" action ={% url "check" %} class="d-inline-flex m-2">
+            {% csrf_token %}
+            <input class="form-control me-2" type="search" name="keyword" placeholder="数字を入力" style="width: 200px;">
+            <button class="btn btn-secondary" type="submit">確認</button>
+        </form>
+    {% if message %}<br><p><strong>{{ message }}</strong></p>{% endif %}
+    <br><a href="{% url "top" %}" class="m-2">トップページに戻る</a>
 </div>
 {% endblock content %}

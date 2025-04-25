@@ -201,6 +201,11 @@ class TestsLoginPostCord(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Contact.objects.first().message, 'test')
         self.assertEqual(Contact.objects.first().created_at, datetime.now().date())
+    
+    def test_post_search(self):
+        response = self.client.post('/search/')
+        
+        self.assertRedirects(response, '/top/')
         
     def test_post_check_lending(self):
         session = self.client.session
@@ -229,16 +234,17 @@ class TestsLoginPostCord(TestCase):
         
         response = self.client.post('/lending/')
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lib_app/lending.html')
         self.assertEqual(Lending.objects.first().id, session['lending_book_id']+1)
         
     def test_post_returned(self):
-
         session = self.client.session
         session['returned_book_id'] = Lending.objects.get(book_id__c_code__exact=1920123456789).id
         session.save()
         response = self.client.post('/returned/')
         
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lib_app/returned.html')
         self.assertTrue(Lending.objects.first().returned)
         
     def test_post_reviewing(self):
@@ -268,3 +274,68 @@ class TestsLoginPostCord(TestCase):
         
         self.user.refresh_from_db()
         self.assertTrue(self.user.check_password('libraryapp'))
+        
+class TestsLoginGetCord(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='tester')
+        self.client.force_login(self.user)
+        
+        library = Library.objects.create(ISBN='9784764106871')
+        
+        book = Book.objects.create(
+            ISBN=library,
+            title="title",
+            writer="writer",
+            publisher="publisher",
+            shelf="1F",
+            c_code="1920581019002"
+        )
+                
+        Reserve.objects.create(
+            user_id=self.user,
+            book_id=book,
+            lending_start=datetime.now(),
+            lending_end=datetime.now()
+        )
+        
+        library2 = Library.objects.create(ISBN='9784012345678')
+        book2 = Book.objects.create(
+            ISBN=library2,
+            title="title",
+            writer="writer",
+            publisher="publisher",
+            shelf="1F",
+            c_code="1920123456789"
+        )
+        Lending.objects.create(
+            user_id=self.user,
+            book_id=book2,
+            lending_start=datetime.now(),
+            lending_end=datetime.now(),
+            returned=False
+        )
+    
+    def test_search(self):
+        response = self.client.get('/search/', {
+            'keyword':'ti'
+        })
+        
+        self.assertEqual(response.status_code, 200)
+        
+    def test_get_lending(self):
+        session = self.client.session
+        session['lending_book_id'] = Reserve.objects.get(book_id__c_code__exact=1920581019002).id
+        session.save()
+        
+        response = self.client.get('/lending/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lib_app/lending_check.html')
+        
+    def test_get_returned(self):
+        session = self.client.session
+        session['returned_book_id'] = Lending.objects.get(book_id__c_code__exact=1920123456789).id
+        session.save()
+        response = self.client.get('/returned/')
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lib_app/returned_check.html')

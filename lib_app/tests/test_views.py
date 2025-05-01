@@ -1,4 +1,4 @@
-from django.test import TestCase, Client
+from django.test import TestCase
 from ..views import *
 from datetime import datetime
 
@@ -237,6 +237,9 @@ class TestsLoginPostCord(TestCase):
         self.assertTemplateUsed(response, 'lib_app/lending.html')
         self.assertEqual(Lending.objects.first().id, session['lending_book_id']+1)
         
+        updated_session = response.wsgi_request.session
+        self.assertNotIn('lending_book_id', updated_session)
+        
     def test_post_returned(self):
         session = self.client.session
         session['returned_book_id'] = Lending.objects.get(book_id__c_code__exact=1920123456789).id
@@ -247,6 +250,9 @@ class TestsLoginPostCord(TestCase):
         self.assertTemplateUsed(response, 'lib_app/returned.html')
         self.assertTrue(Lending.objects.first().returned)
         
+        updated_session = response.wsgi_request.session
+        self.assertNotIn('returned_book_id', updated_session)
+        
     def test_post_reviewing(self):
         response = self.client.post('/reviewing/9784764106871/', {
             'stars':'3',
@@ -256,6 +262,7 @@ class TestsLoginPostCord(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Review.objects.first().stars, 3)
         self.assertEqual(Review.objects.first().review, 'test')
+        self.assertEqual(Review.objects.first().created_at, datetime.now().date())
         
     def test_post_username(self):
         response = self.client.post('/option/username/', {

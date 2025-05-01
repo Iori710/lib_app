@@ -27,9 +27,10 @@ class Review(models.Model):
     ISBN = models.ForeignKey(Library, on_delete=models.CASCADE)
     stars = models.IntegerField('評価(5段階)', default=1,validators=[MinValueValidator(1), MaxValueValidator(5)])
     review = models.TextField(blank=True, null=True)
+    created_at = models.DateField(auto_now_add=True)
     
     def __str__(self):
-        return str(self.user_id)
+        return str(Book.objects.get(ISBN__exact=self.ISBN).title) +"（" + str(self.user_id) + " " +str(self.created_at) +"）"
     
 class Reserve(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)

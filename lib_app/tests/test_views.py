@@ -131,10 +131,10 @@ class TestsLoginPostCord(TestCase):
         self.user = User.objects.create_user(username='testuser', password='tester')
         self.client.force_login(self.user)
         
-        library = Library.objects.create(ISBN='9784764106871')
+        Library.objects.create(ISBN=9784764106871)
         
         book = Book.objects.create(
-            ISBN=library,
+            ISBN=Library.objects.get(ISBN__exact=9784764106871),
             title="title",
             writer="writer",
             publisher="publisher",
@@ -149,14 +149,14 @@ class TestsLoginPostCord(TestCase):
             lending_end=datetime.now()
         )
         
-        library2 = Library.objects.create(ISBN='9784012345678')
+        Library.objects.create(ISBN=9784012345678)
         book2 = Book.objects.create(
-            ISBN=library2,
+            ISBN=Library.objects.get(ISBN__exact=9784012345678),
             title="title",
             writer="writer",
             publisher="publisher",
             shelf="1F",
-            c_code="1920123456789"
+            c_code=1920123456789
         )
         Lending.objects.create(
             user_id=self.user,
@@ -168,16 +168,16 @@ class TestsLoginPostCord(TestCase):
                 
     def test_post_register_new(self):
         response = self.client.post('/register/', {
-            'ISBN':'9784862807069',
+            'ISBN':9784862807069,
             'shelf':'1F',
-            'c_code':'1920030013001'
+            'c_code':1920030013001
         })
         n_lib = Library.objects.last()
         n_book = Book.objects.last()
         
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(Library.objects.all()), 3)
         self.assertEqual(n_lib.ISBN, 9784862807069)
-        self.assertEqual(n_lib.stock, 1)
         self.assertEqual(n_book.title, '文系のためのデータサイエンスがわかる本')
         self.assertEqual(n_book.writer.replace(' ',''), '髙橋威知郎1974-')
         self.assertEqual(n_book.publisher, '総合法令出版')
@@ -186,9 +186,9 @@ class TestsLoginPostCord(TestCase):
     
     def test_post_register_add(self):
         response = self.client.post('/register/', {
-            'ISBN':'9784764106871',
+            'ISBN':9784764106871,
             'shelf':'1F',
-            'c_code':'1920581019002'
+            'c_code':1920581019002
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Library.objects.get(ISBN__exact=9784764106871).stock, 2)

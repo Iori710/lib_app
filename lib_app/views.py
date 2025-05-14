@@ -58,7 +58,8 @@ def Register(request):
                     )
                 book.save() 
             
-        except:
+        except Exception as e:
+            print(f'{e.__class__.__name__}:{e}')
             return render(request, 'lib_app/register.html',
                        {
                             'message':'正しく入力されていない、もしくは該当する書籍が存在しません',

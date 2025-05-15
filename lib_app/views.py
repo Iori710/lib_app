@@ -9,11 +9,13 @@ from datetime import timedelta, datetime
 from functools import reduce
 from operator import and_
 from .models import *
+from .forms import *
 import urllib.request
+import urllib.error
 import xml.etree.ElementTree as ET
 import json
 import time
-from .forms import *
+
 
 # Create your views here.
 def Register(request):
@@ -57,6 +59,16 @@ def Register(request):
                     c_code = request.POST['c_code']
                     )
                 book.save() 
+        
+        except urllib.error.HTTPError as he:
+            print(f'HTTP{he.code}:{he.reason}')
+            return render(request, 'lib_app/register.html',
+                       {
+                            'message':f'HTTP{he.code}エラー:{he.reason}',
+                            'form1':form1,
+                            'form2':form2
+                        }
+                        )
             
         except Exception as e:
             print(f'{e.__class__.__name__}:{e}')
